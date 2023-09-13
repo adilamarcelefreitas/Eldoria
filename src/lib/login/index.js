@@ -37,41 +37,39 @@ export default () => {
 
   const buttonRegister = loginContainer.querySelector('#btn-register'); // Seleciona o botão de registro.
   buttonRegister.addEventListener('click', () => {
-    window.location.hash = '#Register'; // Redireciona para a âncora '#Register' ao clicar.
+    window.location.hash = '#register'; // Redireciona para a âncora '#Register' ao clicar.
   });
 
   const buttonLogin = loginContainer.querySelector('#button-login'); // Seleciona o botão de login.
   buttonLogin.addEventListener('click', () => {
     const email = loginContainer.querySelector('#email-login'); // Captura o campo de e-mail.
     const password = loginContainer.querySelector('#key-login');
-    window.location.hash = '#Home'; // Redireciona para a âncora '#Register' ao clicar.
+    window.location.hash = '#home'; // Redireciona para a âncora '#Register' ao clicar.
 
-    // Captura o campo de senha.
-    // Tenta fazer login com as informações fornecidas.
-  //   login(email.value, password.value)
-  //   .then(() => {
-  //     window.location.hash = '#Home'; // Redireciona para a âncora '#Home' em caso de sucesso.
-  //   })
-  //   .catch((error) => {
-  //     if (error.message === 'Firebase: Error (auth/user-not-found).') {
-  //       alert('User not found'); // Exibe um alerta se o usuário não for encontrado.
-  //     } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
-  //       alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
-  //     }
-  //   });
-  // });
+    login(email.value, password.value)
+    .then(() => {
+      window.location.hash = '#Home'; // Redireciona para a âncora '#Home' em caso de sucesso.
+    })
+    .catch((error) => {
+      if (error.message === 'Firebase: Error (auth/user-not-found).') {
+        alert('User not found'); // Exibe um alerta se o usuário não for encontrado.
+      } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
+        alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
+      }
+    });
+  });
 
-  // const googleButton = loginContainer.querySelector('.button-google');
-  // googleButton.addEventListener('click', () => {
-  //   // alert('botão google ok');
-  //   googleLogin()
-  //     .then(() => {
-  //       window.location.hash = '#Home';
-  //     })
-  //     // eslint-disable-next-line no-unused-vars
-  //     .catch((error) => {
-  //       alert('Erro ao efetuar login com o Google!');
-  //     });
+  const googleButton = loginContainer.querySelector('.button-google');
+  googleButton.addEventListener('click', () => {
+    // alert('botão google ok');
+    googleLogin()
+      .then(() => {
+        window.location.hash = '#Home';
+      })
+      // eslint-disable-next-line no-unused-vars
+      .catch((error) => {
+        alert('Erro ao efetuar login com o Google!');
+      });
   });
 
   return loginContainer;

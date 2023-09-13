@@ -1,5 +1,7 @@
 import firstLogo from '../../assets/Logo-White.png'; // Importa a primeira imagem do logo.
 import girl from '../../assets/Composition-Background1.png'; // Importa a imagem de fundo com uma garota.
+import { FirebaseError } from 'firebase/app';
+import { auth } from '../../firebase/firebaseinit';
 
 export default () => {
   const loginContainer = document.createElement('div'); // Cria um elemento div para o contêiner de login.
@@ -34,7 +36,7 @@ export default () => {
 
   const register = loginContainer.querySelector('#button-register');
   register.addEventListener('click', () => {
-    window.location.hash = '#Home'; // Redireciona para a âncora '#Register' ao clicar.
+    window.location.hash = '#home'; // Redireciona para a âncora '#Register' ao clicar.
   });
 
   const enter = loginContainer.querySelector('#enter-here');
@@ -43,15 +45,32 @@ export default () => {
   });
   
   
-  const user = loginContainer.querySelector('#name-register');
+  const name = loginContainer.querySelector('#name-register');
   const email = loginContainer.querySelector('#email-register');
   const password = loginContainer.querySelector('#key-register');
 
-    // if (user.value === '' || email.value === '' || password.value === '') {
-    //   alert('Por favor, preencha todos os campos.');
-    // } else {
-      
-    // }
+  if (name.value === '') {
+    alert ('Por favor, preencha todos os campos')
+  } else {
+    createUser (email.value, password.value, name.value)
+    .then(() => userData(name.value, password.value, email.value))
+    .then (() => {
+      window.location.hash = '#login';
+    })
+
+    .cath ((error) => {
+      console.error(error.message);
+      if (error.message === 'Firebase: Error (auth/invalid-email).') {
+        alert ('E-mail inválido!');
+
+      } else if (error.message === ' Firebase: error (auth/internal-error).') {
+        alert ('Senha inválida');
+      }
+      alert ('erro ao se cadastrar usuário, verifique os campos preenchidos!');
+    })
+
+  }
+
   
 
 return loginContainer;
