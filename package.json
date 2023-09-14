@@ -43,6 +43,6 @@
     "commit": "24f5a51ee0a15f345b59fcd2ef44c3616abdfce5"
   },
   "dependencies": {
-    "firebase": "^9.17.2"
+    "firebase": "^10.3.0"
   }
 }

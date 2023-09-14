@@ -15,7 +15,7 @@ body {
 
 .logo {
   width: auto;
-  height: 55px;
+  height: 3.5rem;
 }
         
 header {
@@ -40,8 +40,8 @@ header {
   display: flex;
   flex-direction: column;
   text-align: center;
-  height: 100vw;
-  padding: 30px;
+  height: auto;
+  width: 19rem;
   justify-content: center;
   align-items: center;
 }
@@ -52,11 +52,11 @@ header {
   margin-bottom: 0;
 }
       
-.name-register, .email-register, .key-register{
+.form-register{
   padding-left: 15px; 
   border-radius: 20px;
   height: 35px;  
-  width: 233px;
+  width: 14.6rem;
   margin-bottom: 18px;
   border: 1px solid black;
 }
@@ -65,8 +65,8 @@ header {
   background-color: black;
   color: white;
   border-radius: 20px;
-  height: 42px;
-  width: 250px;
+  height: 2.6rem;
+  width: 15.6rem;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -111,9 +111,8 @@ header {
   }
  
   .section-register{
-    margin: 100px 40px 0px;
-    height: 42vh;
-    padding: 35px 35px 25px;
+    margin: 6.25rem 2.5rem 0rem;
+    padding: 2.2rem 2.2rem 1.6rem;
   }
   
   .img-girl-register{
@@ -128,7 +127,7 @@ header {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin-top: 110px;      
+      margin-top: 6.9rem;      
     }
 
     .img-girl-register{
@@ -158,12 +157,11 @@ header {
       
 
     .section-register{
-      margin-top: 13.6vw;
+      /* margin-top: 13.6vw; */
       display: flex;
       flex-direction: column;
-      margin-left: 8vw;
-      height: 50vh;
-      margin-bottom: 20px;
+      /* margin-left: 8vw;
+      margin-bottom: 20px; */
     }
 
     .new-account-register {
@@ -182,8 +180,6 @@ header {
   }
 
   .section-register {
-      height: 40vh;
-      padding: 35px 50px 25px;
-  
+      padding: 2.2rem 3.1rem 1.6rem;
   }
 }
