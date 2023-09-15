@@ -1,7 +1,7 @@
 import firstLogo from '../../assets/Logo-White.png'; // Importa a primeira imagem do logo.
 import girl from '../../assets/Composition-Background1.png'; // Importa a imagem de fundo com uma garota.
 import googleIcon from '../../assets/Google-Logo.png'; // Importa o ícone do Google.
-// import { login, googleLogin } from '../../firebase/firebaseAuth.js';
+import { login, googleLogin } from '../../firebase/firebaseAuth.js';
 
 export default () => {
   const loginContainer = document.createElement('div'); // Cria um elemento div para o contêiner de login.
@@ -45,7 +45,7 @@ export default () => {
   buttonLogin.addEventListener('click', () => {
     const email = loginContainer.querySelector('#email-login'); // Captura o campo de e-mail.
     const password = loginContainer.querySelector('#key-login');
-    window.location.hash = '#home'; // Redireciona para a âncora '#Home' em caso de sucesso.
+    // window.location.hash = '#home'; // Redireciona para a âncora '#Home' em caso de sucesso.
 
   login(email.value, password.value)
     .then(() => {

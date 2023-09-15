@@ -1,7 +1,7 @@
 import firstLogo from '../../assets/Logo-White.png'; // Importa a primeira imagem do logo.
 import girl from '../../assets/Composition-Background1.png'; // Importa a imagem de fundo com uma garota.
 // import { firebaseError } from 'firebase/app';
-// import { createUser } from '../../firebase/firebaseAuth.js';
+import { createUser } from '../../firebase/firebaseAuth.js';
 // import { userData } from '../../firebase/firebaseStore.js';
 
 export default () => {
@@ -39,15 +39,14 @@ export default () => {
 
   const register = loginContainer.querySelector('#button-register');
   register.addEventListener('click', () => {
-    window.location.hash = '#home'; // Redireciona para a âncora '#Register' ao clicar.
+    window.location.hash = '#login'; // Redireciona para a âncora '#Register' ao clicar.
   });
 
   const enter = loginContainer.querySelector('#enter-here');
   enter.addEventListener('click', () => {
     window.location.hash = '';
   });
-  
-  
+
   const name = loginContainer.querySelector('#name-register');
   const lastName = loginContainer.querySelector('#last-name-register');
   const user = loginContainer.querySelector('#user-register');
@@ -62,19 +61,19 @@ export default () => {
   //   .then (() => {
   //     window.location.hash = '#login';
   //   })
-  //   .cath ((error) => {
+  //   .catch ((error) => {
   //     console.error(error.message);
   //     if (error.message === 'Firebase: Error (auth/invalid-email).') {
   //       alert ('E-mail inválido!');
 
-  //     } else if (error.message === ' Firebase: error (auth/internal-error).') {
+  //     } else if (error.message === ' Firebase: Error (auth/internal-error).') {
   //       alert ('Senha inválida');
   //     }
   //     alert ('erro ao se cadastrar usuário, verifique os campos preenchidos!');
   //   })
 
   // }
-  // 
+  
   return loginContainer;
 
 };
