@@ -47,18 +47,18 @@ export default () => {
     const password = loginContainer.querySelector('#key-login');
     // window.location.hash = '#home'; // Redireciona para a âncora '#Home' em caso de sucesso.
 
-  login(email.value, password.value)
-    .then(() => {
-      window.location.hash = '#home'; // Redireciona para a âncora '#Home' em caso de sucesso.
-    })
-    .catch((error) => {
-      if (error.message === 'Firebase: Error (auth/user-not-found).') {
-        alert('User not found'); // Exibe um alerta se o usuário não for encontrado.
-      } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
-        alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
-      }
-      console.error (error);
-    });
+    login(email.value, password.value)
+      .then(() => {
+        window.location.hash = '#home'; // Redireciona para a âncora '#Home' em caso de sucesso.
+      })
+      .catch((error) => {
+        if (error.message === 'Firebase: Error (auth/user-not-found).') {
+          alert('User not found'); // Exibe um alerta se o usuário não for encontrado.
+        } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
+          alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
+        }
+        console.error (error);
+      });
   });
 
   const googleButton = loginContainer.querySelector('.button-google');
@@ -66,7 +66,7 @@ export default () => {
     // alert('botão google ok');
     googleLogin()
       .then(() => {
-        window.location.hash = '#Home';
+        window.location.hash = '#home';
       })
       // eslint-disable-next-line no-unused-vars
       .catch((error) => {
