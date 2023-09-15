@@ -11,7 +11,7 @@ import {
   query,
   orderBy, 
 } from 'firebase/firestore';
-import { app } from './firebaseInit.js';
+import { app } from './firebaseinit.js';
 import { async } from 'regenerator-runtime';
 
 const db = getFirestore(app);

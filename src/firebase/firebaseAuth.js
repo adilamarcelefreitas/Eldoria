@@ -7,9 +7,8 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { app } from './firebaseInit.js';
+import { Auth } from './firebaseinit.js';
 
-export const Auth = getAuth(app);
 
 export const createUser = (email, password, name) => createUserWithEmailAndPassword(Auth, email, password)
  .then((userCredential) => {

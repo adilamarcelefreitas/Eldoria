@@ -57,6 +57,7 @@ export default () => {
       } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
         alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
       }
+      console.error (error);
     });
   });
 
