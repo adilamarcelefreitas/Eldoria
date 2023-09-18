@@ -16,34 +16,34 @@ import { app } from './firebaseinit.js';
 
 const db = getFirestore(app);
 
-export const userData = (name, lastname) => addDoc(collection(db, 'infos-add'), {
+export const userData = (name, lastname) => { addDoc(collection(db, 'infos-add'), {
   nome: name,
   sobrenome: lastname,
-});
+})};
 
-export const newPost = async (postagem, username, id) => addDoc(collection (db, 'posts'), {
+export const newPost = async (postagem, username, id) => { addDoc(collection (db, 'posts'), {
   userName: username,
   post: postagem,
   idUser: id,
-  likes: 0.
+  likes: 0,
   likeUsers: [],
-});
+})};
 
-export const acessPost: async () => {
+export const acessPost = async () => {
   const messages = [];
   const queryOrder = query(collection(db, 'posts'), orderBy('data'));
   const querySnapshot = await getDocs(queryOrder);
-  querySnapshot.forEach(item) => {
+  querySnapshot.forEach ((item) => {
     const data = item.data();
     data.id = item.id;
     messages.push(data);
-  };
+  })
   return messages;
 };
 
-export const editPost = (postId, textArea) => updateDoc(doc(db, 'post', postId), {
+export const editPost = (postId, textArea) => { updateDoc(doc(db, 'post', postId), {
   post: textArea,
-});
+})};
 
 export const likeCounter = async (postId, usernameUser) => updateDoc(doc(db, 'posts', postId), {
   likeUsers: arrayUnion(usernamesUser),

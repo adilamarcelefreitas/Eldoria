@@ -2,7 +2,34 @@ import firstLogo from '../../assets/Logo-White.png'; // Importa a primeira image
 import girl from '../../assets/Composition-Background1.png'; // Importa a imagem de fundo com uma garota.
 // import { firebaseError } from 'firebase/app';
 import { createUser } from '../../firebase/firebaseAuth.js';
-// import { userData } from '../../firebase/firebaseStore.js';
+import { userData } from '../../firebase/firebaseStore.js';
+
+// function register() {
+//   const name = loginContainer.querySelector('.name-register');
+//   const lastName = loginContainer.querySelector('.last-name-register');
+//   const user = loginContainer.querySelector('.user-register');
+//   const email = loginContainer.querySelector('.email-register');
+//   const password = loginContainer.querySelector('.key-register');
+
+//   if (name.value === '' || lastName.value === '' || user.value === '' || email.value === '' || password.value === '') {
+//     alert ('Por favor, preencha todos os campos')
+//   } else {
+//     createUser (email.value, password.value, name.value, lastName.value, user.value)
+//       .then(() => userData(name.value, lastName.value, user.value, email.value))
+//       .then (() => {
+//         window.location.hash = '#login';
+//       })
+//       .catch ((error) => {
+//         console.error(error.message);
+//         if (error.message === 'Firebase: Error (auth/invalid-email).') {
+//           alert ('E-mail inválido!');
+//         } else if (error.message === ' Firebase: Error (auth/internal-error).') {
+//           alert ('Senha inválida');
+//         }
+//         alert ('erro ao se cadastrar usuário, verifique os campos preenchidos!');
+//       })
+//   }
+//  }
 
 export default () => {
   const loginContainer = document.createElement('div'); // Cria um elemento div para o contêiner de login.
@@ -39,6 +66,31 @@ export default () => {
 
   const register = loginContainer.querySelector('#button-register');
   register.addEventListener('click', () => {
+    const name = loginContainer.querySelector('.name-register');
+    const lastName = loginContainer.querySelector('.last-name-register');
+    const user = loginContainer.querySelector('.user-register');
+    const email = loginContainer.querySelector('.email-register');
+    const password = loginContainer.querySelector('.key-register');
+  
+    if (name.value === '' || lastName.value === '' || user.value === '' || email.value === '' || password.value === '') {
+      alert ('Por favor, preencha todos os campos')
+    } else {
+      createUser (email.value, password.value, name.value, lastName.value, user.value)
+        .then(() => userData(name.value, lastName.value, user.value, email.value))
+        .then (() => {
+          window.location.hash = '#login';
+        })
+        .catch ((error) => {
+          console.error(error.message);
+          if (error.message === 'Firebase: Error (auth/invalid-email).') {
+            alert ('E-mail inválido!');
+          } else if (error.message === ' Firebase: Error (auth/internal-error).') {
+            alert ('Senha inválida');
+          }
+          alert ('erro ao se cadastrar usuário, verifique os campos preenchidos!');
+        })
+    }
+
     window.location.hash = '#login'; // Redireciona para a âncora '#Register' ao clicar.
   });
 
@@ -47,29 +99,7 @@ export default () => {
     window.location.hash = '';
   });
 
-  const name = loginContainer.querySelector('.name-register');
-  const lastName = loginContainer.querySelector('.last-name-register');
-  const user = loginContainer.querySelector('.user-register');
-  const email = loginContainer.querySelector('.email-register');
-  const password = loginContainer.querySelector('.key-register');
-
-  if (name.value === '' || lastName.value === '' || user.value === '' || email.value === '' || password.value === '') {
-    alert ('Por favor, preencha todos os campos')
-  } else {
-    createUser (email.value, password.value, name.value, lastName.value, user.value)
-      .then(() => userData(name.value, lastName.value, user.value, email.value))
-      .then (() => {
-        window.location.hash = '#login';
-      })
-      .catch ((error) => {
-        console.error(error.message);
-        if (error.message === 'Firebase: Error (auth/invalid-email).') {
-          alert ('E-mail inválido!');
-        } else if (error.message === ' Firebase: Error (auth/internal-error).') {
-          alert ('Senha inválida');
-        }
-        alert ('erro ao se cadastrar usuário, verifique os campos preenchidos!');
-      })
-  }
+ 
   return loginContainer;
 };
+ 

@@ -71,6 +71,7 @@ export default () => {
       // eslint-disable-next-line no-unused-vars
       .catch((error) => {
         alert('Erro ao efetuar login com o Google!');
+        console.error(error);
       });
   });
 
