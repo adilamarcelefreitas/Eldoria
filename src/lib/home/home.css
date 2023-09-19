@@ -100,6 +100,17 @@ picture {
   position: relative;
 }
 
+.container-feed{
+  background-color: palevioletred;
+  width: 200px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+
+}
+
 .footer-home{
   background-color: #83D0E0;
   position: absolute;
@@ -120,7 +131,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
+  margin-left: auto; 
 }
 
 .footer-info{

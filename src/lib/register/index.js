@@ -73,7 +73,6 @@ export default () => {
     window.location.hash = '';
   });
 
- 
   return loginContainer;
 };
  

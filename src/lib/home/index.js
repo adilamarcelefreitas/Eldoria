@@ -1,11 +1,15 @@
 import firstLogoBlue from '../../assets/Logo-blue.png';
-import { newPost } from "../../firebase/firebaseStore";
+import { newPost, acessPost } from '../../firebase/firebaseStore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+// import {
+//   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
+// } from '../../servicesFirebase/firebaseStore.js';
 
 export default () => {
-    const homeContainer = document.createElement('div');
-    homeContainer.classList.add('home-container');
+  const homeContainer = document.createElement('div');
+  homeContainer.classList.add('home-container');
 
-    const content = `
+  const content = `
       <header class = 'header-home'>
         <nav id='hamburguer' class='menu-hamburguer'>
         <i class="fa-solid fa-bars" id='menu-icon'></i>
@@ -27,64 +31,170 @@ export default () => {
           <input type='text' class='search-input' placeholder=''/>
         </section>
         </div>
+        <div class='container-feed' id='post-feed'>
+        </div>
       </main>
+      
       <footer class='footer-home'>
       
         <div class='new-post'>
-          <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-plus" id="publish-button"> </i>
         </div>
       </footer>
     `;
 
-    homeContainer.innerHTML = content; // Insere o conteúdo HTML dentro do contêiner.
+  homeContainer.innerHTML = content; // Insere o conteúdo HTML dentro do contêiner.
 
-    document.body.classList.add('background-white');
+  document.body.classList.add('background-white');
 
-    const menuIcon = homeContainer.querySelector('#menu-icon');
-    const menuItems = homeContainer.querySelector('.menu-items');
+  const menuIcon = homeContainer.querySelector('#menu-icon');
+  const menuItems = homeContainer.querySelector('.menu-items');
 
-    function menuShow() {
-        menuItems.classList.toggle("open");
-        menuIcon.style.display = 'none';
-    }
+  function menuShow() {
+    menuItems.classList.toggle('open');
+    menuIcon.style.display = 'none';
+  }
 
-    menuIcon.addEventListener('click', menuShow);
+  menuIcon.addEventListener('click', menuShow);
 
-    //função para o botão do modo noturno
+  // função para o botão do modo noturno
 
-    let isNightMode = false;
+  let isNightMode = false;
 
-    const toggleButtonOn = homeContainer.querySelector('#toggle-on');
-    const toggleButtonOff = homeContainer.querySelector('#toggle-off');
-    
-    function toggleNightMode() {
-      const body = document.body;
-    
-      if (isNightMode) {
-        // Desativar o modo noturno
-        body.classList.remove('night-mode');
-        toggleButtonOn.style.display = 'block'; 
-        toggleButtonOff.style.display = 'none'; 
-        isNightMode = false;
-      } else {
-        // Ativar o modo noturno
-        body.classList.add('night-mode');
-        toggleButtonOn.style.display = 'none'; 
-        toggleButtonOff.style.display = 'block'; 
-        isNightMode = true;
-      }
-    }
-    
+  const toggleButtonOn = homeContainer.querySelector('#toggle-on');
+  const toggleButtonOff = homeContainer.querySelector('#toggle-off');
+
+  function toggleNightMode() {
+    const body = document.body;
+
     if (isNightMode) {
-      toggleButtonOn.style.display = 'none'; 
+      // Desativar o modo noturno
+      body.classList.remove('night-mode');
+      toggleButtonOn.style.display = 'block';
+      toggleButtonOff.style.display = 'none';
+      isNightMode = false;
     } else {
-      toggleButtonOff.style.display = 'none'; 
+      // Ativar o modo noturno
+      body.classList.add('night-mode');
+      toggleButtonOn.style.display = 'none';
+      toggleButtonOff.style.display = 'block';
+      isNightMode = true;
     }
+  }
+
+  if (isNightMode) {
+    toggleButtonOn.style.display = 'none';
+  } else {
+    toggleButtonOff.style.display = 'none';
+  }
+
+  toggleButtonOn.addEventListener('click', toggleNightMode);
+  toggleButtonOff.addEventListener('click', toggleNightMode);
+
+  // fim da função
+
+  const auth = getAuth();
+
+  // Função para renderizar os posts
+  function renderPost(post) {
+    const postFeed = homeContainer.querySelector('#post-feed');
+
+    const postContainer = document.createElement('div');
+    postContainer.className = 'post';
+    const postTitle = document.createElement('h2');
+    postTitle.textContent = `${post.title} - Autor: ${post.author}`;
+    const postContent = document.createElement('p');
+    postContent.textContent = post.content;
+
+    postContainer.appendChild(postTitle);
+    postContainer.appendChild(postContent);
+
+    postFeed.appendChild(postContainer);
+  }
+
+  // Função para renderizar os posts somente se o usuário estiver autenticado
+  function renderPostsIfAuthenticated(username) {
+    const newPostButton = homeContainer.querySelector('.new-post i');
+
+    newPostButton.addEventListener('click', () => {
+      const newPostContainer = document.createElement('div');
+      newPostContainer.className = 'new-post-container';
+
+      const postTitleInput = document.createElement('input');
+      postTitleInput.type = 'text';
+      postTitleInput.placeholder = 'Título';
+      postTitleInput.id = 'post-title';
+
+      const postContentTextarea = document.createElement('textarea');
+      postContentTextarea.placeholder = 'Conteúdo';
+      postContentTextarea.id = 'post-content';
+
+      const publishButton = document.createElement('button');
+      publishButton.textContent = 'Publicar';
+      publishButton.id = 'publish-button';
+
+      publishButton.addEventListener('click', async () => {
+        try {
+          const title = postTitleInput.value;
+          const content = postContentTextarea.value;
+
+          if (!title || !content) {
+            alert('Preencha todos os campos.');
+            return;
+          }
+
+          const newPostData = {
+            title,
+            content,
+            author: username, // Use o nome do usuário obtido anteriormente
+            timestamp: new Date(),
+          };
+
+          await newPost(
+            newPostData.title,
+            newPostData.content,
+            newPostData.author
+          );
+
+          renderPost(newPostData);
+          postTitleInput.value = '';
+          postContentTextarea.value = '';
+          // alert('Postagem publicada com sucesso!');
+        } catch (error) {
+          console.error('Erro ao criar postagem', error);
+          alert('Erro ao criar postagem. Tente novamente mais tarde.');
+        }
+      });
+
+      newPostContainer.appendChild(postTitleInput);
+      newPostContainer.appendChild(postContentTextarea);
+      newPostContainer.appendChild(publishButton);
+
+      const postFeed = homeContainer.querySelector('#post-feed');
+      postFeed.appendChild(newPostContainer);
+    });
+  }
+
+  // ...
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const username = user.displayName; // Obtenha o nome do usuário
+  
+      // O usuário está autenticado, então busque e renderize os posts existentes
+      try {
+        const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
+        renderPosts(existingPosts); // Renderize os posts existentes
+      } catch (error) {
+        console.error('Erro ao buscar posts', error);
+      }
+  
+      // Em seguida, renderize os novos posts, se o usuário criar um
+      renderPostsIfAuthenticated(username);
+    } else {
+      // O usuário não está autenticado, você pode redirecioná-lo para a página de login ou fazer algo diferente aqui
+    }
+  });
     
-    toggleButtonOn.addEventListener('click', toggleNightMode);
-    toggleButtonOff.addEventListener('click', toggleNightMode);
-
-    //fim da função
-
-    return homeContainer;
-}
+  return homeContainer;
+};

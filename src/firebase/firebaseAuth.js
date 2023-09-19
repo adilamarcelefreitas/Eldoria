@@ -11,7 +11,7 @@ import { Auth } from './firebaseinit.js';
 export const createUser = (email, password, name) => createUserWithEmailAndPassword(Auth, email, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    return updateProfile(user, { name });
+    return updateProfile(user, { displayName: name }); //displayname: name
   });
 
 export const login = (email, password) => signInWithEmailAndPassword(Auth, email, password);
