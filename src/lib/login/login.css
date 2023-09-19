@@ -9,6 +9,10 @@ body {
     font-size: 18px ; 
 }
 
+.login-background {
+    background-color: #22A6C4;
+}
+
 header {
     display: flex;
     justify-content: center;

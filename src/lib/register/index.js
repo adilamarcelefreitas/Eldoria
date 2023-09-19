@@ -70,9 +70,8 @@ export default () => {
 
   const enter = loginContainer.querySelector('#enter-here');
   enter.addEventListener('click', () => {
-    window.location.hash = '';
+    window.location.hash = '#login';
   });
 
   return loginContainer;
 };
- 

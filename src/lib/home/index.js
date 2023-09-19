@@ -1,6 +1,6 @@
 import firstLogoBlue from '../../assets/Logo-blue.png';
 import { newPost, acessPost } from '../../firebase/firebaseStore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 // import {
 //   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
 // } from '../../servicesFirebase/firebaseStore.js';
@@ -17,7 +17,7 @@ export default () => {
             <li><a href=""><i class='fa-solid fa-circle-user'></i></a><span class='menu-text'>Perfil</span></li>
             <li><i class='fa-solid fa-toggle-on custom-button'id='toggle-on'></i></li>
             <li><i class='fa-solid fa-toggle-off custom-button'id='toggle-off'></i></li>
-            <li><a href=""><i class='fa-solid fa-arrow-right-from-bracket'></i></a><span class='menu-text'>Sair</span></li>
+            <li><button type='button' id='btn-logout'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text'>Sair</span></li>
           </ul>
         </nav>
       </header>
@@ -45,49 +45,43 @@ export default () => {
 
   homeContainer.innerHTML = content; // Insere o conteúdo HTML dentro do contêiner.
 
-  document.body.classList.add('background-white');
-
   const menuIcon = homeContainer.querySelector('#menu-icon');
   const menuItems = homeContainer.querySelector('.menu-items');
 
   function menuShow() {
     menuItems.classList.toggle('open');
-    menuIcon.style.display = 'none';
+    // menuIcon.style.display = 'none';
   }
 
   menuIcon.addEventListener('click', menuShow);
 
   // função para o botão do modo noturno
 
-  let isNightMode = false;
-
+  let isNightMode = true;
   const toggleButtonOn = homeContainer.querySelector('#toggle-on');
   const toggleButtonOff = homeContainer.querySelector('#toggle-off');
 
   function toggleNightMode() {
+    isNightMode = !isNightMode;
     const body = document.body;
+    body.classList.remove('login-background');
 
     if (isNightMode) {
-      // Desativar o modo noturno
-      body.classList.remove('night-mode');
+      // ativar o modo noturno
+      body.classList.add('night-mode');
+      body.classList.remove('background-white');
       toggleButtonOn.style.display = 'block';
       toggleButtonOff.style.display = 'none';
-      isNightMode = false;
     } else {
-      // Ativar o modo noturno
-      body.classList.add('night-mode');
+      // desativar o modo noturno
+      body.classList.add('background-white');
+      body.classList.remove('night-mode');
       toggleButtonOn.style.display = 'none';
       toggleButtonOff.style.display = 'block';
-      isNightMode = true;
     }
   }
 
-  if (isNightMode) {
-    toggleButtonOn.style.display = 'none';
-  } else {
-    toggleButtonOff.style.display = 'none';
-  }
-
+  toggleNightMode();
   toggleButtonOn.addEventListener('click', toggleNightMode);
   toggleButtonOff.addEventListener('click', toggleNightMode);
 
@@ -180,7 +174,7 @@ export default () => {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const username = user.displayName; // Obtenha o nome do usuário
-  
+
       // O usuário está autenticado, então busque e renderize os posts existentes
       try {
         const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
@@ -188,13 +182,29 @@ export default () => {
       } catch (error) {
         console.error('Erro ao buscar posts', error);
       }
-  
+
       // Em seguida, renderize os novos posts, se o usuário criar um
       renderPostsIfAuthenticated(username);
     } else {
       // O usuário não está autenticado, você pode redirecioná-lo para a página de login ou fazer algo diferente aqui
     }
   });
-    
+
+  // Função para fazer logout
+  function logout() {
+    signOut(auth)
+      .then(() => {
+        window.location = '/';
+      })
+      .catch((error) => {
+        console.error('Erro ao fazer logout', error);
+        alert('Erro ao fazer logout. Tente novamente mais tarde');
+      });
+  }
+
+  // Evento de clique no botão "Sair"
+  const logoutButton = homeContainer.querySelector('#btn-logout');
+  logoutButton.addEventListener('click', logout);
+
   return homeContainer;
 };

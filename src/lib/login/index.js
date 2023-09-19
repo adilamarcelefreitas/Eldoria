@@ -4,6 +4,10 @@ import googleIcon from '../../assets/Google-Logo.png'; // Importa o ícone do Go
 import { login, googleLogin } from '../../firebase/firebaseAuth.js';
 
 export default () => {
+  document.body.classList.remove('night-mode');
+  document.body.classList.remove('background-white');
+  document.body.classList.add('login-background');
+
   const loginContainer = document.createElement('div'); // Cria um elemento div para o contêiner de login.
   loginContainer.classList.add('login-container'); // Adiciona a classe 'login-container' ao elemento.
 
@@ -57,7 +61,7 @@ export default () => {
         } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
           alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
         }
-        console.error (error);
+        console.error(error);
       });
   });
 
@@ -76,4 +80,4 @@ export default () => {
   });
 
   return loginContainer;
-}
+};
