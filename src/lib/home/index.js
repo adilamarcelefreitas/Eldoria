@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 //   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
 // } from '../../servicesFirebase/firebaseStore.js';
 
-export default () => {
+export default async () => {
   const homeContainer = document.createElement('div');
   homeContainer.classList.add('home-container');
 
@@ -88,7 +88,9 @@ export default () => {
   // fim da função
 
   const auth = getAuth();
-
+  const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
+  renderPost(existingPosts) 
+  console.log(existingPosts);
   // Função para renderizar os posts
   function renderPost(post) {
     const postFeed = homeContainer.querySelector('#post-feed');
@@ -147,7 +149,7 @@ export default () => {
           await newPost(
             newPostData.title,
             newPostData.content,
-            newPostData.author
+            newPostData.author,
           );
 
           renderPost(newPostData);
@@ -178,12 +180,12 @@ export default () => {
       // O usuário está autenticado, então busque e renderize os posts existentes
       try {
         const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
-        renderPosts(existingPosts); // Renderize os posts existentes
+        renderPost(existingPosts); // Renderize os posts existentes
       } catch (error) {
         console.error('Erro ao buscar posts', error);
       }
 
-      // Em seguida, renderize os novos posts, se o usuário criar um
+     
       renderPostsIfAuthenticated(username);
     } else {
       // O usuário não está autenticado, você pode redirecioná-lo para a página de login ou fazer algo diferente aqui

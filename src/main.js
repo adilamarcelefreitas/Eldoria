@@ -12,7 +12,7 @@ import register from './lib/register/index.js';
 const main = document.querySelector('#root');
 
 const init = () => {
-  window.addEventListener('hashchange', () => {
+  window.addEventListener('hashchange',  async () => {
     main.innerHTML = '';
     switch (window.location.hash) {
       case '':
@@ -25,7 +25,7 @@ const init = () => {
         main.appendChild(register());
         break;
       case '#home':
-        main.appendChild(home());
+        main.appendChild( await home());
         break;
       default:
         main.appendChild(login());

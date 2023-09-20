@@ -8,11 +8,13 @@ import {
 } from 'firebase/auth';
 import { Auth } from './firebaseinit.js';
 
-export const createUser = (email, password, name) => createUserWithEmailAndPassword(Auth, email, password)
-  .then((userCredential) => {
+export const createUser = async (email, password, name) => {
+ return createUserWithEmailAndPassword(Auth, email, password)
+  .then(async (userCredential) => {
     const user = userCredential.user;
-    return updateProfile(user, { displayName: name }); //displayname: name
+    await updateProfile(user, { displayName: name })
   });
+}
 
 export const login = (email, password) => signInWithEmailAndPassword(Auth, email, password);
 

@@ -21,13 +21,13 @@ export const userData = (name, lastname) => { addDoc(collection(db, 'infos-add')
   sobrenome: lastname,
 })};
 
-export const newPost = async (postagem, username, id) => { addDoc(collection (db, 'posts'), {
+export const newPost = async (postagem, username, id) => addDoc(collection (db, 'posts'), {
   userName: username,
   post: postagem,
   idUser: id,
   likes: 0,
   likeUsers: [],
-})};
+});
 
 export const acessPost = async () => {
   const messages = [];
@@ -36,7 +36,8 @@ export const acessPost = async () => {
   querySnapshot.forEach((item) => {
     const data = item.data();
     data.id = item.id;
-    messages.push(data);
+    messages.push(data)
+    console.log(data);
   });
   return messages;
 };
