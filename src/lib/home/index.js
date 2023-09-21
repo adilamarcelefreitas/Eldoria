@@ -47,9 +47,22 @@ export default async () => {
   const menuIcon = homeContainer.querySelector('#menu-icon');
   const menuItems = homeContainer.querySelector('.menu-items');
 
+  function closeMenuOnClickOutside(event) {
+    if (!menuItems.contains(event.target) && event.target !== menuIcon) { //verifica se o evento de clique é no próprio menuItems ou no menuIcon
+      menuItems.classList.remove('open');
+    }
+  }
+
   function menuShow() {
-    menuItems.classList.toggle('open');
-    menuIcon.style.display = 'none';
+    if (menuItems.classList.contains('open')) {
+      menuItems.classList.remove('open');
+      menuItems.style.zIndex = '0';
+    } else {
+      menuItems.classList.add('open');
+      menuItems.style.zIndex = '1';
+
+      document.addEventListener('click', closeMenuOnClickOutside);
+    }
   }
 
   menuIcon.addEventListener('click', menuShow);

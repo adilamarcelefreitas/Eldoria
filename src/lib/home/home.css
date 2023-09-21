@@ -45,6 +45,7 @@
   cursor: pointer;
   font-size: 32px;
   margin: 15px 0px 0px 15px;
+  position: relative;
 }
 
 .menu-items {
@@ -62,6 +63,7 @@
   width: 8.5rem;
   margin: 15px 0px 0px 15px;
   position: absolute;
+  z-index: 1;
 }
 
 #container {
@@ -74,13 +76,14 @@
 }
 
 .fa-toggle-on, .fa-circle-user, .fa-arrow-right-from-bracket, .fa-toggle-off {
-  font-size: 25px;
+  font-size: 26px;
   margin: 11.5px;
   cursor: pointer;
 }
 
 #btn-logout {
   border: none;
+  background-color: transparent;
 }
 
 .menu-text {
