@@ -12,15 +12,14 @@ export default () => {
   loginContainer.classList.add('login-container'); // Adiciona a classe 'login-container' ao elemento.
 
   const content = `
-      <div class='images'>
-      <header class='header-login'>
-        <img src='${firstLogo}' alt='logo-eldoria' class='logo-login'> 
-        <p>Dedicado a todos os entusiastas de literatura fantástica</p>
-      </header>
-      <img src='${girl}' class='img-girl' alt='Desenho de uma menina lendo'>
-      </div>
-      
-      <main>
+      <main id='container-login'>
+        <div class='images'>
+          <section class='header'>
+            <img src='${firstLogo}' alt='logo-eldoria' class='logo-login'> 
+            <p class='subtitle'>Dedicado a todos os entusiastas de literatura fantástica</p>
+          </section>
+          <img src='${girl}' class='img-girl' alt='Desenho de uma menina lendo'>
+        </div>
         <form class='section-login'>
           <h2> Faça login no Eldoria </h2>
           <div class='input-login'> 
@@ -42,7 +41,7 @@ export default () => {
 
   const buttonRegister = loginContainer.querySelector('#btn-register'); // Seleciona o botão de registro.
   buttonRegister.addEventListener('click', () => {
-    window.location.hash = '#register'; // Redireciona para a âncora '#Register' ao clicar.
+    window.location.hash = '#register'; // Redireciona para a âncora '#register' ao clicar.
   });
 
   const buttonLogin = loginContainer.querySelector('#button-login'); // Seleciona o botão de login.

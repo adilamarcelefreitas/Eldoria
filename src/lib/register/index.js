@@ -10,15 +10,14 @@ export default () => {
   loginContainer.classList.add('register-container'); // Adiciona a classe 'login-container' ao elemento.
 
   const content = `
-    <div class='images-register'>
-      <header class='header-login'>
-        <img src='${firstLogo}' alt='logo-eldoria' class='logo'> 
-        <p>Dedicado a todos os entusiastas de literatura fantástica</p>
-      </header>
-      <img src='${girl}' class='img-girl-register' alt='Desenho de uma menina lendo'>
-      </div>
-
-      <main>
+      <main id='container-register'>
+        <div class='images-register'>
+        <section class='header'>
+          <img src='${firstLogo}' alt='logo-eldoria' class='logo'> 
+          <p class='subtitle'>Dedicado a todos os entusiastas de literatura fantástica</p>
+        </section>
+        <img src='${girl}' class='img-girl-register' alt='Desenho de uma menina lendo'>
+        </div>
         <form class='section-register'>
           <h2 class='new-account-register'> Criar uma nova conta <h2> 
           <div class='input-register'>

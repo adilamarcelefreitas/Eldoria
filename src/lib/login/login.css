@@ -13,7 +13,7 @@ body {
     background-color: #22A6C4;
 }
 
-header {
+.header {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,7 +22,7 @@ header {
     margin-top: 20px;
 }
 
-header p {
+.subtitle {
     font-size: 17px;
     color: white;
     text-align: center;
@@ -30,6 +30,10 @@ header p {
     font-weight: 500;
 }
     
+#container-login{
+    align-items: center;
+}
+
 .section-login{
     border: 1px solid white;
     border-radius: 12px;
@@ -37,11 +41,14 @@ header p {
     display: flex;
     flex-direction: column;
     text-align: center;
-    height: auto;
-    padding: 30px;
+    height: 26rem;
+    width: 19rem;
     justify-content: center;
     align-items: center;
-    margin: auto;
+}
+
+.login-container{
+    height: 100vh;
 }
 
 main {
@@ -65,8 +72,9 @@ h2{
     border-radius: 20px;
     height: 35px;  
     width: 15rem;
-    margin-bottom: 10px;
+    margin-top: 10px;
     border: 1px solid black;
+
 }
 
 .button-singIn {
@@ -86,7 +94,7 @@ h2{
     border: none;
     color: black;
     font-size: 15px;
-    margin-bottom: 18px;  
+    margin: 10px 29px;  
     cursor: pointer; 
     display: flex;
     margin-left: auto;
@@ -153,7 +161,7 @@ footer {
         width: 30vh;
     }
    
-    header p {
+    .subtitle {
         font-size: 23px;
         margin-top: 15px;
     }
@@ -168,12 +176,10 @@ footer {
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
     }
 
-    .section-login{
-        margin: 6.25rem 2.5rem 0rem;
-        padding: 2.2rem 2.2rem 1.6rem;
+    .login-email, .login-password {
+        font-size: 12px;
     }
 
     .text-or{
@@ -189,16 +195,15 @@ footer {
 
 /* Para telas maiores */
 @media screen and (min-width: 1024px) {
-    .img-girl { 
-        display: block;
-        height: 24vw;
-        width: 27vw;
-        margin: 20px 0px;
-    }
-
     .login-container {
         display: flex;
+        align-items: center;
         justify-content: center;
+    }
+    
+    #container-login{
+        display: flex;
+        flex-direction: row;
     }
 
     .logo-login {
@@ -206,12 +211,12 @@ footer {
         width: 30vh;
     }
 
-    header p {
-        font-size: 15px;
+    .subtitle {
+        font-size: 20px;
         margin-top: 10px;
     }
 
-    .header-login {
+    .header {
         height: auto;
         width: auto;
         padding: 0px;
@@ -226,7 +231,7 @@ footer {
     .login-email, .login-password {
         height: 2.2rem;  
         width: 14.6rem;
-        font-size: 10px;
+        font-size: 15px;
     }
 
     input::placeholder {
@@ -259,22 +264,19 @@ footer {
         width: 25px;
     }  
 
+    .img-girl { 
+        display: block;
+        height: 30vw;
+        width: 33vw;
+        
+    }
+
     .images {
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        margin-top: 6.9rem;
+        margin-right: 5rem;
     }   
-
-    .section-login {
-       margin-top: 15vw;
-       display: flex;
-       flex-direction: column;
-       margin-left: 8vw;
-       margin-bottom: 20px;
-       
-    }
 
     .footer-info {
         display: flex;
@@ -310,8 +312,13 @@ footer {
 }
 
 @media (min-width: 1920px) {
-    .section-login {
-        padding: 2.2rem 3.1rem 1.6rem;
+    .img-girl { 
+        display: block;
+        height: 19vw;
+        width: 22vw;
     }
 
+    .images {
+        margin-right: 14rem;
+    }   
 }

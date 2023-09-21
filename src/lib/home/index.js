@@ -21,7 +21,7 @@ export default async () => {
           </ul>
         </nav>
       </header>
-      <main>
+      <main id='container'>
         <picture>
         <img src='../../assets/Logo-blue.png' id='Logo-blue'>
         </picture>
@@ -36,7 +36,6 @@ export default async () => {
       </main>
       
       <footer class='footer-home'>
-      
         <div class='new-post'>
         <i class="fa-solid fa-plus" id="publish-button"> </i>
         </div>
@@ -50,7 +49,7 @@ export default async () => {
 
   function menuShow() {
     menuItems.classList.toggle('open');
-    // menuIcon.style.display = 'none';
+    menuIcon.style.display = 'none';
   }
 
   menuIcon.addEventListener('click', menuShow);
@@ -88,7 +87,7 @@ export default async () => {
   // fim da função
 
   const auth = getAuth();
-  const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
+  const existingPosts = await acessPost(); 
   renderPost(existingPosts) 
   console.log(existingPosts);
   // Função para renderizar os posts
@@ -188,7 +187,7 @@ export default async () => {
      
       renderPostsIfAuthenticated(username);
     } else {
-      // O usuário não está autenticado, você pode redirecioná-lo para a página de login ou fazer algo diferente aqui
+      // O usuário não está autenticado, você pode redirecioná-lo para a página de login 
     }
   });
 

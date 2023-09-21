@@ -18,7 +18,7 @@ body {
   height: 3.5rem;
 }
         
-header {
+.header {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,6 +34,11 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100vh;
+}
+
+#container-register{
+  align-items: center;
 }
 
 .section-register{
@@ -43,8 +48,8 @@ h2 {
   display: flex;
   flex-direction: column;
   text-align: center;
-  height: auto;
-  width: 18rem;
+  height: 30rem;
+  width: 19rem;
   justify-content: center;
   align-items: center;
 }
@@ -112,12 +117,12 @@ h2 {
   font-size: 23px;
   margin-top: 15px;
   }
- 
-  .section-register{
-    margin: 6.25rem 2.5rem 0rem;
-    padding: 2.2rem 2.2rem 1.6rem;
+
+  .images-register{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  
   .img-girl-register{
     display: none;
   }
@@ -127,25 +132,22 @@ h2 {
   
     .images-register{
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-top: 6.9rem;      
+        flex-direction: column;
+        align-items: center;
+        margin-right: 5rem;
     }
 
     .img-girl-register{
       display: block;
-      height: 24vw;
-      width: 27vw;
-      margin: 20px 0px;
+      height: 30vw;
+      width: 33vw;
       
     }
 
     .register-container {
       display: flex;
-      justify-content: center;
       align-items: center;
-      flex-direction: row;
+      justify-content: center;
   }
 
     .logo {
@@ -157,14 +159,10 @@ h2 {
     font-size: 23px;
     margin-top: 15px;
     }
-      
-
-    .section-register{
-      /* margin-top: 13.6vw; */
+  
+    #container-register{
       display: flex;
-      flex-direction: column;
-      /* margin-left: 8vw;
-      margin-bottom: 20px; */
+      flex-direction: row;
     }
 
     .new-account-register {
@@ -180,9 +178,11 @@ h2 {
 @media (min-width: 1920px) {
   .img-girl-register {
     display: block;
+    height: 19vw;
+    width: 22vw;
   }
 
-  .section-register {
-      padding: 2.2rem 3.1rem 1.6rem;
-  }
+  .images-register {
+    margin-right: 14rem;
+}   
 }

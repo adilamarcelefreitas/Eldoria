@@ -21,8 +21,8 @@
   border-radius: 60vh;
   background-color: rgb(226, 222, 222);
   border: none;
-  width: 35vh;
-  height: 5vh;
+  width: 50vw;
+  height: 10vw;
   font-size: 15px;
   padding-left: 32px; /* Espaço à esquerda para acomodar o ícone */
 }
@@ -30,8 +30,9 @@
 .search-icon {
   position: absolute;
   top: 50%;
-  left: 10px; /* Ajuste a posição horizontal do ícone conforme necessário */
+  left: 13px; /* Ajuste a posição horizontal do ícone conforme necessário */
   transform: translateY(-50%);
+  font-size: 18px;
 }
 
 .header-home {
@@ -43,6 +44,7 @@
 #menu-icon {
   cursor: pointer;
   font-size: 32px;
+  margin: 15px 0px 0px 15px;
 }
 
 .menu-items {
@@ -58,6 +60,12 @@
   border-radius: 10px;
   height: 9.5rem;
   width: 8.5rem;
+  margin: 15px 0px 0px 15px;
+  position: absolute;
+}
+
+#container {
+  position: relative;
 }
 
 .menu-items.open li a {
@@ -69,6 +77,10 @@
   font-size: 25px;
   margin: 11.5px;
   cursor: pointer;
+}
+
+#btn-logout {
+  border: none;
 }
 
 .menu-text {
@@ -93,6 +105,7 @@ picture {
   align-items: center;
   justify-content: center;
   margin: auto;
+  margin-top: 5vw;
 }
 
 .search-container {
@@ -126,12 +139,14 @@ footer {
 .new-post{
   border-radius: 60vh;
   background-color: #1590AF;
-  width: 4vh;
-  height: 4vh;
+  width: 13vw;
+  height: 13vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto; 
+  margin-left: 80vw;
+  top: -4vh;
+  position: relative; 
 }
 
 .footer-info{
@@ -142,4 +157,5 @@ footer {
   color: white;
   display: inline-block;
   position: relative;
+  font-size: 8vw;
 }
