@@ -124,7 +124,6 @@ picture {
   justify-content: center;
   align-items: center;
   margin: auto;
-
 }
 
 .footer-home{
@@ -151,7 +150,10 @@ footer {
   top: -4vh;
   position: relative; 
 }
+.post{
+  background-color: black;
 
+}
 .footer-info{
   display: none;
 }

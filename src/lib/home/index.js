@@ -128,11 +128,6 @@ export default async () => {
       const newPostContainer = document.createElement('div');
       newPostContainer.className = 'new-post-container';
 
-      // const postTitleInput = document.createElement('input');
-      // postTitleInput.type = 'text';
-      // postTitleInput.placeholder = 'Título';
-      // postTitleInput.id = 'post-title';
-
       const postContentTextarea = document.createElement('textarea');
       postContentTextarea.placeholder = 'Conteúdo';
       postContentTextarea.id = 'post-content';
@@ -143,7 +138,6 @@ export default async () => {
 
       publishButton.addEventListener('click', async () => {
         try {
-          // const title = postTitleInput.value;
           const contentPost = postContentTextarea.value;
 
           if (!contentPost) {
@@ -153,21 +147,18 @@ export default async () => {
 
           const newPostData = {
             userName,
-            // title,
             idUser,
             post: contentPost,
             timestamp: new Date(),
           };
 
           await newPost(
-            // newPostData.title,
             newPostData.post,
             newPostData.userName,
             newPostData.idUser,
           );
 
           renderPost(newPostData);
-          // postTitleInput.value = '';
           postContentTextarea.value = '';
           // alert('Postagem publicada com sucesso!');
         } catch (error) {
@@ -176,7 +167,6 @@ export default async () => {
         }
       });
 
-      // newPostContainer.appendChild(postTitleInput);
       newPostContainer.appendChild(postContentTextarea);
       newPostContainer.appendChild(publishButton);
 
