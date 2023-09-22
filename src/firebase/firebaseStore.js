@@ -16,10 +16,10 @@ import { app } from './firebaseinit.js';
 
 const db = getFirestore(app);
 
-export const userData = (name, lastname) => { addDoc(collection(db, 'infos-add'), {
+export const userData = async (name, lastname) => addDoc(collection (db, 'infos-add'), {
   nome: name,
   sobrenome: lastname,
-})};
+});
 
 export const newPost = async (postagem, username, id) => addDoc(collection (db, 'posts'), {
   userName: username,
@@ -27,17 +27,18 @@ export const newPost = async (postagem, username, id) => addDoc(collection (db, 
   idUser: id,
   likes: 0,
   likeUsers: [],
+  timestamp: new Date(),
 });
 
 export const acessPost = async () => {
   const messages = [];
-  const queryOrder = query(collection(db, 'posts'), orderBy('timestamp', 'desc')); 
+  const queryOrder = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
   const querySnapshot = await getDocs(queryOrder);
   querySnapshot.forEach((item) => {
     const data = item.data();
     data.id = item.id;
-    messages.push(data)
     console.log(data);
+    messages.push(data);
   });
   return messages;
 };

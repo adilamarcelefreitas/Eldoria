@@ -100,38 +100,38 @@ export default async () => {
   // fim da função
 
   const auth = getAuth();
-  const existingPosts = await acessPost(); 
-  renderPost(existingPosts) 
-  console.log(existingPosts);
+  const existingPosts = await acessPost();
+  existingPosts.forEach(item => renderPost(item));
+
   // Função para renderizar os posts
   function renderPost(post) {
+    console.log(post)
     const postFeed = homeContainer.querySelector('#post-feed');
 
     const postContainer = document.createElement('div');
     postContainer.className = 'post';
     const postTitle = document.createElement('h2');
-    postTitle.textContent = `${post.title} - Autor: ${post.author}`;
+    postTitle.textContent = `${post.userName}`;
     const postContent = document.createElement('p');
-    postContent.textContent = post.content;
+    postContent.textContent = post.post;
 
     postContainer.appendChild(postTitle);
     postContainer.appendChild(postContent);
-
     postFeed.appendChild(postContainer);
   }
 
   // Função para renderizar os posts somente se o usuário estiver autenticado
-  function renderPostsIfAuthenticated(username) {
+  function renderPostsIfAuthenticated(userName, idUser) {
     const newPostButton = homeContainer.querySelector('.new-post i');
 
     newPostButton.addEventListener('click', () => {
       const newPostContainer = document.createElement('div');
       newPostContainer.className = 'new-post-container';
 
-      const postTitleInput = document.createElement('input');
-      postTitleInput.type = 'text';
-      postTitleInput.placeholder = 'Título';
-      postTitleInput.id = 'post-title';
+      // const postTitleInput = document.createElement('input');
+      // postTitleInput.type = 'text';
+      // postTitleInput.placeholder = 'Título';
+      // postTitleInput.id = 'post-title';
 
       const postContentTextarea = document.createElement('textarea');
       postContentTextarea.placeholder = 'Conteúdo';
@@ -143,29 +143,31 @@ export default async () => {
 
       publishButton.addEventListener('click', async () => {
         try {
-          const title = postTitleInput.value;
-          const content = postContentTextarea.value;
+          // const title = postTitleInput.value;
+          const contentPost = postContentTextarea.value;
 
-          if (!title || !content) {
+          if (!contentPost) {
             alert('Preencha todos os campos.');
             return;
           }
 
           const newPostData = {
-            title,
-            content,
-            author: username, // Use o nome do usuário obtido anteriormente
+            userName,
+            // title,
+            idUser,
+            post: contentPost,
             timestamp: new Date(),
           };
 
           await newPost(
-            newPostData.title,
-            newPostData.content,
-            newPostData.author,
+            // newPostData.title,
+            newPostData.post,
+            newPostData.userName,
+            newPostData.idUser,
           );
 
           renderPost(newPostData);
-          postTitleInput.value = '';
+          // postTitleInput.value = '';
           postContentTextarea.value = '';
           // alert('Postagem publicada com sucesso!');
         } catch (error) {
@@ -174,7 +176,7 @@ export default async () => {
         }
       });
 
-      newPostContainer.appendChild(postTitleInput);
+      // newPostContainer.appendChild(postTitleInput);
       newPostContainer.appendChild(postContentTextarea);
       newPostContainer.appendChild(publishButton);
 
@@ -183,12 +185,11 @@ export default async () => {
     });
   }
 
-  // ...
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const username = user.displayName; // Obtenha o nome do usuário
-
+      const userId = user.uid;
       // O usuário está autenticado, então busque e renderize os posts existentes
       try {
         const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
@@ -198,7 +199,7 @@ export default async () => {
       }
 
      
-      renderPostsIfAuthenticated(username);
+      renderPostsIfAuthenticated(username, userId);
     } else {
       // O usuário não está autenticado, você pode redirecioná-lo para a página de login 
     }
