@@ -114,21 +114,35 @@ picture {
 .search-container {
  display: inline-block;
   position: relative;
+  margin-bottom: 3rem;
 }
 
-.container-feed{
-  background-color: palevioletred;
-  width: 200px;
+.post{
+  width: 370px;
   height: 100px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: left;
+  align-items: left; */
   margin: auto;
+  background-color: #F9FAFB;
+  border: 1px solid #E6E3E3;
+  border-radius: 5px;
+  margin-bottom: 18px;
+  flex-direction: column;
+}
+
+.user-container {
+  display: flex;
+}
+
+.post p{
+  margin-left: 3rem;
+  
 }
 
 .footer-home{
   background-color: #83D0E0;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -150,10 +164,26 @@ footer {
   top: -4vh;
   position: relative; 
 }
-.post{
-  background-color: black;
+
+.new-post-container {
+  width: 370px;
+  height: 100px;
+  display: flex;
+  margin: auto;
+  background-color: #F9FAFB;
+  border: 1px solid #E6E3E3;
+  border-radius: 5px;
+  margin-bottom: 18px;
+}
+
+#post-content {
+  resize: none;
+  border: none;
+  background-color: #F9FAFB;
+
 
 }
+
 .footer-info{
   display: none;
 }

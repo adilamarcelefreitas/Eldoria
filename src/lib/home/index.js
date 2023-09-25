@@ -1,13 +1,16 @@
 import firstLogoBlue from '../../assets/Logo-blue.png';
+// import sendIcon from '../../assets/send-publish.png';
 import { newPost, acessPost } from '../../firebase/firebaseStore';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 // import {
 //   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
 // } from '../../servicesFirebase/firebaseStore.js';
 
+
 export default async () => {
   const homeContainer = document.createElement('div');
   homeContainer.classList.add('home-container');
+  let isNewPostContainerCreated = false;
 
   const content = `
       <header class = 'header-home'>
@@ -31,6 +34,7 @@ export default async () => {
           <input type='text' class='search-input' placeholder=''/>
         </section>
         </div>
+        <div id='new-post-container'></div>
         <div class='container-feed' id='post-feed'>
         </div>
       </main>
@@ -103,19 +107,30 @@ export default async () => {
   const existingPosts = await acessPost();
   existingPosts.forEach(item => renderPost(item));
 
-  // Função para renderizar os posts
-  function renderPost(post) {
-    console.log(post)
-    const postFeed = homeContainer.querySelector('#post-feed');
 
+  function renderPost(post) {
+    console.log(post);
+
+    const postFeed = homeContainer.querySelector('#post-feed');
     const postContainer = document.createElement('div');
     postContainer.className = 'post';
+
+    const userContainer = document.createElement('div');
+    userContainer.className = 'user-container';
+
+    const postIcon = document.createElement('i');
+    postIcon.className = 'fa-solid fa-circle-user';
+
     const postTitle = document.createElement('h2');
     postTitle.textContent = `${post.userName}`;
+
     const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
-    postContainer.appendChild(postTitle);
+    userContainer.appendChild(postIcon);
+    userContainer.appendChild(postTitle);
+
+    postContainer.appendChild(userContainer);
     postContainer.appendChild(postContent);
     postFeed.appendChild(postContainer);
   }
@@ -123,55 +138,76 @@ export default async () => {
   // Função para renderizar os posts somente se o usuário estiver autenticado
   function renderPostsIfAuthenticated(userName, idUser) {
     const newPostButton = homeContainer.querySelector('.new-post i');
+    const newPostContainerLocation = homeContainer.querySelector('#new-post-container');
 
     newPostButton.addEventListener('click', () => {
-      const newPostContainer = document.createElement('div');
-      newPostContainer.className = 'new-post-container';
+      if (!isNewPostContainerCreated) {
+        const newPostContainer = document.createElement('div');
+        newPostContainer.className = 'new-post-container';
 
-      const postContentTextarea = document.createElement('textarea');
-      postContentTextarea.placeholder = 'Conteúdo';
-      postContentTextarea.id = 'post-content';
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-circle-user';
 
-      const publishButton = document.createElement('button');
-      publishButton.textContent = 'Publicar';
-      publishButton.id = 'publish-button';
+        const postContentDiv = document.createElement('div');
+        postContentDiv.className = 'post-content-div';
 
-      publishButton.addEventListener('click', async () => {
-        try {
-          const contentPost = postContentTextarea.value;
+        const postContentTextarea = document.createElement('textarea');
+        postContentTextarea.placeholder = 'O que você leu hoje?';
+        postContentTextarea.id = 'post-content';
 
-          if (!contentPost) {
-            alert('Preencha todos os campos.');
-            return;
+        //Adiciona o ícone e a <textarea> como filhos do div de conteúdo
+        postContentDiv.appendChild(icon);
+        postContentDiv.appendChild(postContentTextarea);
+
+        // Adiciona a div de conteúdo ao contêiner da postagem
+        newPostContainer.appendChild(postContentDiv);
+
+        const publishButton = document.createElement('button');
+        publishButton.innerHTML = `<img src='../../assets/icons8-enviado-48.png'>`;
+
+        publishButton.id = 'publish-button';
+
+        publishButton.addEventListener('click', async () => {
+          try {
+            const contentPost = postContentTextarea.value;
+
+            if (!contentPost) {
+              alert('Preencha todos os campos.');
+              return;
+            }
+
+            const newPostData = {
+              userName,
+              idUser,
+              post: contentPost,
+              timestamp: new Date(),
+            };
+
+            await newPost(
+              newPostData.post,
+              newPostData.userName,
+              newPostData.idUser,
+            );
+
+            renderPost(newPostData);
+            postContentTextarea.value = '';
+            // alert('Postagem publicada com sucesso!');
+          } catch (error) {
+            console.error('Erro ao criar postagem', error);
+            alert('Erro ao criar postagem. Tente novamente mais tarde.');
           }
+        });
 
-          const newPostData = {
-            userName,
-            idUser,
-            post: contentPost,
-            timestamp: new Date(),
-          };
+        newPostContainer.appendChild(postContentTextarea);
+        newPostContainer.appendChild(publishButton);
 
-          await newPost(
-            newPostData.post,
-            newPostData.userName,
-            newPostData.idUser,
-          );
+        const postFeed = homeContainer.querySelector('#post-feed');
+        postFeed.appendChild(newPostContainer);
 
-          renderPost(newPostData);
-          postContentTextarea.value = '';
-          // alert('Postagem publicada com sucesso!');
-        } catch (error) {
-          console.error('Erro ao criar postagem', error);
-          alert('Erro ao criar postagem. Tente novamente mais tarde.');
-        }
-      });
+        newPostContainerLocation.appendChild(newPostContainer);
+        isNewPostContainerCreated = true;
 
-      newPostContainer.appendChild(postContentTextarea);
-      newPostContainer.appendChild(publishButton);
-
-      const postFeed = homeContainer.querySelector('#post-feed');
-      postFeed.appendChild(newPostContainer);
+      }
     });
   }
 
@@ -188,7 +224,7 @@ export default async () => {
         console.error('Erro ao buscar posts', error);
       }
 
-     
+
       renderPostsIfAuthenticated(username, userId);
     } else {
       // O usuário não está autenticado, você pode redirecioná-lo para a página de login 
@@ -210,6 +246,7 @@ export default async () => {
   // Evento de clique no botão "Sair"
   const logoutButton = homeContainer.querySelector('#btn-logout');
   logoutButton.addEventListener('click', logout);
+
 
   return homeContainer;
 };
