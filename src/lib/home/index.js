@@ -1,11 +1,16 @@
 import firstLogoBlue from '../../assets/Logo-blue.png';
-import sendIcon from '../../assets/icons8-enviado-48.png';
+import sendIcon from '../../assets/send.png';
+import heartIconWhite from '../../assets/heart-white.png';
+import heartIconBlack from '../../assets/heart-black.png';
+import editIconWhite from '../../assets/edit-white.png';
+import editIconBlack from '../../assets/edit-black.png';
+import binIconWhite from '../../assets/bin-white.png';
+import binIconBlack from '../../assets/bin-black.png';
 import { newPost, acessPost } from '../../firebase/firebaseStore';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 // import {
 //   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
 // } from '../../servicesFirebase/firebaseStore.js';
-
 
 export default async () => {
   const homeContainer = document.createElement('div');
@@ -80,6 +85,7 @@ export default async () => {
   function toggleNightMode() {
     isNightMode = !isNightMode;
     const body = document.body;
+
     body.classList.remove('login-background');
 
     if (isNightMode) {
@@ -101,12 +107,9 @@ export default async () => {
   toggleButtonOn.addEventListener('click', toggleNightMode);
   toggleButtonOff.addEventListener('click', toggleNightMode);
 
-  // fim da função
-
   const auth = getAuth();
   const existingPosts = await acessPost();
   existingPosts.forEach(item => renderPost(item));
-
 
   function renderPost(post) {
     console.log(post);
@@ -127,90 +130,107 @@ export default async () => {
     const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
+    const likeButton = document.createElement('button');
+    likeButton.innerHTML = `<img src="${heartIconBlack}">`;
+    likeButton.className = 'like-button';
+    const likeCount = document.createElement('span');
+    likeCount.className = 'like-count';
+    likeCount.textContent = '0';
+
     userContainer.appendChild(postIcon);
     userContainer.appendChild(postTitle);
 
     postContainer.appendChild(userContainer);
     postContainer.appendChild(postContent);
+    postContainer.appendChild(likeCount);
+    postContainer.appendChild(likeButton);
+    postContainer.setAttribute('data-post-id', post.id);
     postFeed.appendChild(postContainer);
   }
 
-  // Função para renderizar os posts somente se o usuário estiver autenticado
   function renderPostsIfAuthenticated(userName, idUser) {
-    const newPostButton = homeContainer.querySelector('.new-post i');
+    // const newPostButton = homeContainer.querySelector('.new-post i');
     const newPostContainerLocation = homeContainer.querySelector('#new-post-container');
 
-    newPostButton.addEventListener('click', () => {
-      if (!isNewPostContainerCreated) {
-        const newPostContainer = document.createElement('div');
-        newPostContainer.className = 'new-post-container';
+    if (!isNewPostContainerCreated) {
+      const newPostContainer = document.createElement('div');
+      newPostContainer.className = 'new-post-container';
 
-        const icon = document.createElement('i');
-        icon.className = 'fa-solid fa-circle-user';
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-circle-user';
 
-        const postContentDiv = document.createElement('div');
-        postContentDiv.className = 'post-content-div';
+      const userNameElement = document.createElement('h2');
+      userNameElement.className = 'username';
+      userNameElement.textContent = `${userName}`;
 
-        const postContentTextarea = document.createElement('textarea');
-        postContentTextarea.placeholder = 'O que você leu hoje?';
-        postContentTextarea.id = 'post-content';
+      const postContentDiv = document.createElement('div');
+      postContentDiv.className = 'post-content-div';
 
-        //Adiciona o ícone e a <textarea> como filhos do div de conteúdo
-        postContentDiv.appendChild(icon);
-        postContentDiv.appendChild(postContentTextarea);
+      const postContentTextarea = document.createElement('textarea');
+      postContentTextarea.placeholder = 'O que você leu hoje?';
+      postContentTextarea.id = 'post-content';
 
-        // Adiciona a div de conteúdo ao contêiner da postagem
-        newPostContainer.appendChild(postContentDiv);
+      // Adiciona o ícone e a <textarea> como filhos do div de conteúdo
+      postContentDiv.appendChild(icon);
+      postContentDiv.appendChild(userNameElement);
+      postContentDiv.appendChild(postContentTextarea);
 
-        const publishButton = document.createElement('button');
-        publishButton.innerHTML = `<img src="${sendIcon}">`;
+      // Adiciona a div de conteúdo ao contêiner da postagem
+      newPostContainer.appendChild(postContentDiv);
 
-        publishButton.id = 'publish-button';
+      const publishButton = document.createElement('button');
+      publishButton.innerHTML = `<img src="${sendIcon}">`;
+      publishButton.id = 'send-icon';
 
-        publishButton.addEventListener('click', async () => {
-          try {
-            const contentPost = postContentTextarea.value;
+      const contentBox = document.createElement('div');
+      contentBox.className = 'content-box';
 
-            if (!contentPost) {
-              alert('Preencha todos os campos.');
-              return;
-            }
+      contentBox.appendChild(postContentTextarea);
+      contentBox.appendChild(publishButton);
+      newPostContainer.appendChild(contentBox);
 
-            const newPostData = {
-              userName,
-              idUser,
-              post: contentPost,
-              timestamp: new Date(),
-            };
+      publishButton.addEventListener('click', async () => {
+        try {
+          const contentPost = postContentTextarea.value;
 
-            await newPost(
-              newPostData.post,
-              newPostData.userName,
-              newPostData.idUser,
-            );
+          if (!contentPost) {
+            alert('Preencha todos os campos.');
+            return;
+          };
 
-            renderPost(newPostData);
-            postContentTextarea.value = '';
-            // alert('Postagem publicada com sucesso!');
-          } catch (error) {
-            console.error('Erro ao criar postagem', error);
-            alert('Erro ao criar postagem. Tente novamente mais tarde.');
-          }
-        });
+          const newPostData = {
+            userName,
+            idUser,
+            post: contentPost,
+            timestamp: new Date(),
+          };
 
-        newPostContainer.appendChild(postContentTextarea);
-        newPostContainer.appendChild(publishButton);
+          await newPost(
+            newPostData.post,
+            newPostData.userName,
+            newPostData.idUser,
+          );
 
-        const postFeed = homeContainer.querySelector('#post-feed');
-        postFeed.appendChild(newPostContainer);
+          renderPost(newPostData);
+          postContentTextarea.value = '';
+          // alert('Postagem publicada com sucesso!');
+        } catch (error) {
+          console.error('Erro ao criar postagem', error);
+          alert('Erro ao criar postagem. Tente novamente mais tarde.');
+        }
+      });
 
-        newPostContainerLocation.appendChild(newPostContainer);
-        isNewPostContainerCreated = true;
+      const postFeed = homeContainer.querySelector('#post-feed');
+      postFeed.appendChild(newPostContainer);
 
-      }
-    });
+      newPostContainerLocation.appendChild(newPostContainer);
+      isNewPostContainerCreated = true;
+    }
   }
 
+  document.addEventListener('DOMContentLoaded', () => {
+    renderPostsIfAuthenticated(userName, idUser);
+  });
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -218,16 +238,13 @@ export default async () => {
       const userId = user.uid;
       // O usuário está autenticado, então busque e renderize os posts existentes
       try {
-        const existingPosts = await acessPost(); // Use a função acessPost do seu arquivo Firestore para buscar os posts existentes
-        renderPost(existingPosts); // Renderize os posts existentes
+        const existingPosts = await acessPost();
+        renderPost(existingPosts);
       } catch (error) {
         console.error('Erro ao buscar posts', error);
       }
-
-
       renderPostsIfAuthenticated(username, userId);
     } else {
-      // O usuário não está autenticado, você pode redirecioná-lo para a página de login 
     }
   });
 
@@ -243,10 +260,90 @@ export default async () => {
       });
   }
 
+  // função de busca 
+  function filterPosts(searchValue) {
+    const postFeed = homeContainer.querySelector('#post-feed');
+    const posts = postFeed.querySelectorAll('.post');
+
+    posts.forEach((post) => {
+      const postContent = post.querySelector('p').textContent.toLowerCase();
+      const postTitle = post.querySelector('h2').textContent.toLowerCase();
+      if (postContent.includes(searchValue) || postTitle.includes(searchValue)) {
+        post.style.display = 'block';
+      } else {
+        post.style.display = 'none';
+      }
+    })
+  };
+
   // Evento de clique no botão "Sair"
   const logoutButton = homeContainer.querySelector('#btn-logout');
   logoutButton.addEventListener('click', logout);
 
+  const searchInput = homeContainer.querySelector('.search-input');
+  searchInput.addEventListener('input', () => {
+    const searchValue = searchInput.value.trim().toLowerCase();
+    filterPosts(searchValue);
+  });
 
   return homeContainer;
 };
+
+
+//função do like
+// const likeButtons = document.querySelectorAll('.like-button');
+
+// function updateLikeCount(postId, count) {
+//   const likeCountElement = homeContainer.querySelector(`[data-post-id="${postId}"] .like-count`);
+//   if (likeCountElement) {
+//     likeCountElement.textContent = count.toString();
+//   }
+// }
+// //ouvinte
+// likeButtons.forEach((likeButton) => {
+//   likeButton.addEventListener('click', async () => {
+//     const postId = likeButton.closest('.post').getAttribute('data-post-id');
+
+//     try {
+//       const hasLiked = await checkIfUserLiked(postId, 'user'); // Passa o ID do usuário atual aqui
+
+//       if (!hasLiked) {
+//         await likeCounter(postId, 'user'); // Passa o ID do usuário atual aqui
+
+//         const currentCount = parseInt(likeButton.nextElementSibling.textContent);
+//         const newCount = currentCount + 1;
+//         likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
+//       } else {
+//         await deslikeCounter(postId, 'user'); // Passa o ID do usuário atual aqui
+
+//         const currentCount = parseInt(likeButton.nextElementSibling.textContent);
+//         const newCount = currentCount - 1;
+//         likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
+//       }
+//     } catch (error) {
+//       console.error('Erro ao curtir o post', error);
+//       alert('Erro ao curtir o post. Tente novamente mais tarde.');
+//     }
+//   });
+// });
+
+// async function checkIfUserLiked(postId, userId) {
+//   try {
+//     const postRef = doc(db, 'posts', postId);
+//     const postSnapshot = await getDoc(postRef);
+
+//     if (postSnapshot.exists()) {
+//       const postData = postSnapshot.data();
+
+//       if (postData.likeUsers && postData.likeUsers.includes(userId)) {
+//         return true;
+//       }
+//     }
+
+//     return false;
+//   } catch (error) {
+//     console.error('Erro ao verificar se o usuário curtiu o post:', error);
+//     throw error;
+//   }
+// }
+

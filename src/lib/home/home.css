@@ -3,6 +3,9 @@
   padding: 0;
 }
 
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
 .background-white{
     background-color:white;
 }
@@ -24,13 +27,13 @@
   width: 50vw;
   height: 10vw;
   font-size: 15px;
-  padding-left: 32px; /* Espaço à esquerda para acomodar o ícone */
+  padding-left: 32px; 
 }
 
 .search-icon {
   position: absolute;
   top: 50%;
-  left: 13px; /* Ajuste a posição horizontal do ícone conforme necessário */
+  left: 13px;
   transform: translateY(-50%);
   font-size: 18px;
 }
@@ -56,8 +59,8 @@
 
 .menu-items.open {
   display: block;
-  background-color: rgb(239, 235, 235);
-  border: 1px solid rgb(180, 179, 179);
+  background-color: #F9FAFB;
+  border: 1px solid #E6E3E3;
   border-radius: 10px;
   height: 9.5rem;
   width: 8.5rem;
@@ -98,7 +101,7 @@ picture {
 }
 
 #Logo-blue {
-   width: auto;
+  width: auto;
   height: 3.5rem;
   align-items: center;
   justify-content: center;
@@ -112,27 +115,27 @@ picture {
 }
 
 .search-container {
- display: inline-block;
+  display: inline-block;
   position: relative;
   margin-bottom: 3rem;
 }
 
-.post{
+.post, .new-post-container {
   width: 370px;
   height: 100px;
   display: flex;
-  /* justify-content: left;
-  align-items: left; */
+  flex-direction: column;
   margin: auto;
   background-color: #F9FAFB;
   border: 1px solid #E6E3E3;
   border-radius: 5px;
   margin-bottom: 18px;
-  flex-direction: column;
 }
 
-.user-container {
+.user-container, .post-content-div {
   display: flex;
+  align-items:center ;
+
 }
 
 .post p{
@@ -140,16 +143,16 @@ picture {
   
 }
 
-.footer-home{
-  background-color: #83D0E0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+#publish-button {
+  cursor: pointer;
 }
 
-footer {
-  display: block;
+#send-icon {
+  display: flex;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  margin-top: 15px;
 }
 
 .new-post{
@@ -165,32 +168,53 @@ footer {
   position: relative; 
 }
 
-.new-post-container {
-  width: 370px;
-  height: 100px;
-  display: flex;
-  margin: auto;
-  background-color: #F9FAFB;
-  border: 1px solid #E6E3E3;
-  border-radius: 5px;
-  margin-bottom: 18px;
-}
-
 #post-content {
   resize: none;
   border: none;
+  height: 9vw;
+  width: 65vw ;
   background-color: #F9FAFB;
+  margin-left: 3rem;
+  font-size: 17px;
+}
 
+.content-box{
+  display: flex;
+}
 
+textarea:focus {
+  outline: 0;
+}
+
+textarea::placeholder{
+  font-size: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.like-button{
+  border: none;
+  background-color: transparent;
+}
+  
+.fa-plus{ 
+  color: white;
+  display: inline-block;
+  position: relative;
+  font-size: 8vw;
 }
 
 .footer-info{
   display: none;
 }
 
-.fa-plus{ 
-  color: white;
-  display: inline-block;
-  position: relative;
-  font-size: 8vw;
+.footer-home{
+  background-color: #83D0E0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+footer {
+  display: block;
 }
