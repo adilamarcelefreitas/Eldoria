@@ -6,7 +6,7 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { Auth } from './firebaseinit.js';
+import { Auth } from './firebaseInit.js';
 
 export const createUser = async (email, password, name) => {
  return createUserWithEmailAndPassword(Auth, email, password)

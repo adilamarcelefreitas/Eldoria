@@ -1,5 +1,5 @@
 import firstLogoBlue from '../../assets/Logo-blue.png';
-// import sendIcon from '../../assets/send-publish.png';
+import sendIcon from '../../assets/icons8-enviado-48.png';
 import { newPost, acessPost } from '../../firebase/firebaseStore';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 // import {
@@ -163,7 +163,7 @@ export default async () => {
         newPostContainer.appendChild(postContentDiv);
 
         const publishButton = document.createElement('button');
-        publishButton.innerHTML = `<img src='../../assets/icons8-enviado-48.png'>`;
+        publishButton.innerHTML = `<img src="${sendIcon}">`;
 
         publishButton.id = 'publish-button';
 
