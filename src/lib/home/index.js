@@ -22,19 +22,19 @@ export default async () => {
         <nav id='hamburguer' class='menu-hamburguer'>
         <i class="fa-solid fa-bars" id='menu-icon'></i>
           <ul class='menu-items'>
-            <li><a href=""><i class='fa-solid fa-circle-user'></i></a><span class='menu-text'>Perfil</span></li>
+            <li><a href=""><i class='fa-solid fa-circle-user icon-user-menu'></i></a><span class='menu-text'>Perfil</span></li>
             <li><i class='fa-solid fa-toggle-on custom-button'id='toggle-on'></i></li>
             <li><i class='fa-solid fa-toggle-off custom-button'id='toggle-off'></i></li>
             <li><button type='button' id='btn-logout'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text'>Sair</span></li>
           </ul>
         </nav>
       </header>
-      <main id='container'>
+      <main id='main'>
         <picture>
         <img src='../../assets/Logo-blue.png' id='Logo-blue'>
         </picture>
-        <div class='container'>
-        <section class='search-container'>
+        <div class='search-container'>
+        <section class='section-search'>
           <i class='fa-solid fa-magnifying-glass search-icon'></i>
           <input type='text' class='search-input' placeholder=''/>
         </section>
@@ -57,7 +57,8 @@ export default async () => {
   const menuItems = homeContainer.querySelector('.menu-items');
 
   function closeMenuOnClickOutside(event) {
-    if (!menuItems.contains(event.target) && event.target !== menuIcon) { //verifica se o evento de clique é no próprio menuItems ou no menuIcon
+    if (!menuItems.contains(event.target) && event.target !== menuIcon) {
+      //verifica se o evento de clique é no próprio menuItems ou no menuIcon
       menuItems.classList.remove('open');
     }
   }
@@ -109,7 +110,7 @@ export default async () => {
 
   const auth = getAuth();
   const existingPosts = await acessPost();
-  existingPosts.forEach(item => renderPost(item));
+  existingPosts.forEach((item) => renderPost(item));
 
   function renderPost(post) {
     console.log(post);
@@ -120,6 +121,9 @@ export default async () => {
 
     const userContainer = document.createElement('div');
     userContainer.className = 'user-container';
+    
+    const userTitle = document.createElement('div');
+    userTitle.className = 'user-title';
 
     const postIcon = document.createElement('i');
     postIcon.className = 'fa-solid fa-circle-user';
@@ -130,20 +134,40 @@ export default async () => {
     const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
+    const editButton = document.createElement('button');
+    editButton.innerHTML = `<img width='25px' height='auto' src="${editIconBlack}">`;
+    editButton.className = 'edit-button';
+
+    const userActions = document.createElement('div');
+    userActions.className = 'user-actions';
+
+    const likeAction = document.createElement('div');
+    likeAction.className = 'like-actions';
+
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = `<img width='25px' height='auto' src="${binIconBlack}">`;
+    deleteButton.className = 'delete-button';
+
     const likeButton = document.createElement('button');
-    likeButton.innerHTML = `<img src="${heartIconBlack}">`;
+    likeButton.innerHTML = `<img width='25px' height='auto' src="${heartIconBlack}">`;
     likeButton.className = 'like-button';
+
     const likeCount = document.createElement('span');
     likeCount.className = 'like-count';
     likeCount.textContent = '0';
 
-    userContainer.appendChild(postIcon);
-    userContainer.appendChild(postTitle);
-
+    userTitle.appendChild(postIcon);
+    userTitle.appendChild(postTitle);
+    userContainer.appendChild(userTitle);
+    userContainer.appendChild(editButton);
     postContainer.appendChild(userContainer);
     postContainer.appendChild(postContent);
-    postContainer.appendChild(likeCount);
-    postContainer.appendChild(likeButton);
+    postContainer.appendChild(userActions);
+    
+    userActions.appendChild(deleteButton);
+    likeAction.appendChild(likeCount);
+    likeAction.appendChild(likeButton);
+    userActions.appendChild(likeAction);
     postContainer.setAttribute('data-post-id', post.id);
     postFeed.appendChild(postContainer);
   }
@@ -196,7 +220,7 @@ export default async () => {
           if (!contentPost) {
             alert('Preencha todos os campos.');
             return;
-          };
+          }
 
           const newPostData = {
             userName,
@@ -208,7 +232,7 @@ export default async () => {
           await newPost(
             newPostData.post,
             newPostData.userName,
-            newPostData.idUser,
+            newPostData.idUser
           );
 
           renderPost(newPostData);
@@ -260,7 +284,7 @@ export default async () => {
       });
   }
 
-  // função de busca 
+  // função de busca
   function filterPosts(searchValue) {
     const postFeed = homeContainer.querySelector('#post-feed');
     const posts = postFeed.querySelectorAll('.post');
@@ -268,13 +292,16 @@ export default async () => {
     posts.forEach((post) => {
       const postContent = post.querySelector('p').textContent.toLowerCase();
       const postTitle = post.querySelector('h2').textContent.toLowerCase();
-      if (postContent.includes(searchValue) || postTitle.includes(searchValue)) {
+      if (
+        postContent.includes(searchValue) ||
+        postTitle.includes(searchValue)
+      ) {
         post.style.display = 'block';
       } else {
         post.style.display = 'none';
       }
-    })
-  };
+    });
+  }
 
   // Evento de clique no botão "Sair"
   const logoutButton = homeContainer.querySelector('#btn-logout');
@@ -288,7 +315,6 @@ export default async () => {
 
   return homeContainer;
 };
-
 
 //função do like
 // const likeButtons = document.querySelectorAll('.like-button');
@@ -346,4 +372,3 @@ export default async () => {
 //     throw error;
 //   }
 // }
-
