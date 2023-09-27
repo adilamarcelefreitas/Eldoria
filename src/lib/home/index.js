@@ -6,8 +6,17 @@ import editIconWhite from '../../assets/edit-white.png';
 import editIconBlack from '../../assets/edit-black.png';
 import binIconWhite from '../../assets/bin-white.png';
 import binIconBlack from '../../assets/bin-black.png';
-import { newPost, acessPost } from '../../firebase/firebaseStore';
+import {
+  newPost,
+  acessPost,
+  likeCounter,
+  deslikeCounter,
+  deletePost,
+} from '../../firebase/firebaseStore.js';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase/firebaseInit.js';
 // import {
 //   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
 // } from '../../servicesFirebase/firebaseStore.js';
@@ -20,18 +29,36 @@ export default async () => {
   const content = `
       <header class = 'header-home'>
         <nav id='hamburguer' class='menu-hamburguer'>
-        <i class="fa-solid fa-bars" id='menu-icon'></i>
-          <ul class='menu-items'>
-            <li><a href=""><i class='fa-solid fa-circle-user icon-user-menu'></i></a><span class='menu-text'>Perfil</span></li>
-            <li><i class='fa-solid fa-toggle-on custom-button'id='toggle-on'></i></li>
-            <li><i class='fa-solid fa-toggle-off custom-button'id='toggle-off'></i></li>
-            <li><button type='button' id='btn-logout'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text'>Sair</span></li>
-          </ul>
+        <div id='menu-mobile'>
+          <i class="fa-solid fa-bars" id='menu-icon'></i>
+            <ul class='menu-items'>
+              <li><a href=""><i class='fa-solid fa-circle-user icon-user-menu'></i></a><span class='menu-text'>Perfil</span></li>
+              <li><i class='fa-solid fa-toggle-on custom-button'id='toggle-on'></i></li>
+              <li><i class='fa-solid fa-toggle-off custom-button'id='toggle-off'></i></li>
+              <li><button type='button' id='btn-logout'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text'>Sair</span></li>
+            </ul>
+        </div>
+        </nav>
+           <nav>
+          <div id='menu-desktop'>
+            <picture>
+              <img src='../../assets/Logo-blue.png' id='logo-blue-dektop'>
+            </picture>
+            <ul class='menu-items-desktop'>
+              <li><a href=""><i class="fa-solid fa-house"></i></a><span class=''>Página incial</span></li>
+              <li>
+                <i class='fa-solid fa-magnifying-glass search-icon-desktop'></i>
+                <input type='text' class='search-input-desktop' placeholder='pesquisar'/>
+              </li>
+              <li><a href=""><i class='fa-solid fa-circle-user icon-user-desktop'></i></a><span class='menu-text'>Perfil</span></li>
+              <li><button type='button' id='btn-logout-desktop'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text'>Sair</span></li>
+            </ul>
+          </div>
         </nav>
       </header>
       <main id='main'>
         <picture>
-        <img src='../../assets/Logo-blue.png' id='Logo-blue'>
+        <img src='../../assets/Logo-blue.png' id='logo-blue'>
         </picture>
         <div class='search-container'>
         <section class='section-search'>
@@ -121,7 +148,7 @@ export default async () => {
 
     const userContainer = document.createElement('div');
     userContainer.className = 'user-container';
-    
+
     const userTitle = document.createElement('div');
     userTitle.className = 'user-title';
 
@@ -163,18 +190,67 @@ export default async () => {
     postContainer.appendChild(userContainer);
     postContainer.appendChild(postContent);
     postContainer.appendChild(userActions);
-    
+
     userActions.appendChild(deleteButton);
     likeAction.appendChild(likeCount);
     likeAction.appendChild(likeButton);
     userActions.appendChild(likeAction);
     postContainer.setAttribute('data-post-id', post.id);
     postFeed.appendChild(postContainer);
+
+    likeButton.addEventListener('click', async () => {
+      const postId = likeButton.closest('.post').getAttribute('data-post-id');
+
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const idUserAtual = user ? user.uid : null;
+      
+      try {
+        const hasLiked = await checkIfUserLiked(postId, idUserAtual);
+
+        if (!hasLiked) {
+          await likeCounter(postId, idUserAtual);
+
+          const likeCountElement = likeButton.nextElementSibling;
+          if (likeCountElement) {
+            const currentCount = parseInt(likeCountElement.textContent);
+            if (!isNaN(currentCount)) {
+              const newCount = currentCount + 1;
+              likeCountElement.textContent = newCount;
+            } else {
+              console.error('O conteúdo do contador de curtidas não é um número válido:', likeCountElement.textContent);
+            }
+          } else {
+            console.error('Elemento do contador de curtidas não encontrado.');
+          }
+        } else {
+          await deslikeCounter(postId, idUserAtual);
+    
+          const likeCountElement = likeButton.nextElementSibling;
+          if (likeCountElement) {
+            const currentCount = parseInt(likeCountElement.textContent);
+            if (!isNaN(currentCount)) {
+              const newCount = currentCount - 1;
+              likeCountElement.textContent = newCount;
+            } else {
+              console.error('O conteúdo do contador de curtidas não é um número válido:', likeCountElement.textContent);
+            }
+          } else {
+            console.error('Elemento do contador de curtidas não encontrado.');
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao curtir o post', error);
+        alert('Erro ao curtir o post. Tente novamente mais tarde.');
+      }
+    });
   }
 
   function renderPostsIfAuthenticated(userName, idUser) {
     // const newPostButton = homeContainer.querySelector('.new-post i');
-    const newPostContainerLocation = homeContainer.querySelector('#new-post-container');
+    const newPostContainerLocation = homeContainer.querySelector(
+      '#new-post-container'
+    );
 
     if (!isNewPostContainerCreated) {
       const newPostContainer = document.createElement('div');
@@ -313,62 +389,69 @@ export default async () => {
     filterPosts(searchValue);
   });
 
+  // função do like
+  const likeButtons = document.querySelectorAll('.like-button');
+
+  function updateLikeCount(postId, count) {
+    const likeCountElement = document.querySelector(
+      `[data-post-id="${postId}"] .like-count`
+    );
+    if (likeCountElement) {
+      likeCountElement.textContent = count.toString();
+    }
+  }
+
+  // Função para lidar com o clique no botão "Curtir"
+  async function handleLikeButtonClick(likeButton) {
+    const postId = likeButton.closest('.post').getAttribute('data-post-id');
+    const currentUserDisplayName = Auth.currentUser.displayName;
+    const likeCountElement = likeButton.closest('.post').querySelector('.like-count');
+
+    try {
+      const hasLiked = await checkIfUserLiked(postId, 'idUserAtual');
+
+      if (!hasLiked) {
+        await likeCounter(postId, 'idUserAtual');
+
+        const currentCount = parseInt(
+          likeButton.nextElementSibling.textContent
+        );
+        const newCount = currentCount + 1;
+        likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
+      } else {
+        await deslikeCounter(postId, 'idUserAtual');
+
+        const currentCount = parseInt(
+          likeButton.nextElementSibling.textContent
+        );
+        const newCount = currentCount - 1;
+        likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
+      }
+    } catch (error) {
+      console.error('Erro ao curtir o post', error);
+      alert('Erro ao curtir o post. Tente novamente mais tarde.');
+    }
+  }
+
+  async function checkIfUserLiked(postId, userId) {
+    try {
+      const postRef = doc(db, 'posts', postId);
+      const postSnapshot = await getDoc(postRef);
+
+      if (postSnapshot.exists()) {
+        const postData = postSnapshot.data();
+
+        if (postData.likeUsers && postData.likeUsers.includes(userId)) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Erro ao verificar se o usuário curtiu o post:', error);
+      throw error;
+    }
+  }
+
   return homeContainer;
 };
-
-//função do like
-// const likeButtons = document.querySelectorAll('.like-button');
-
-// function updateLikeCount(postId, count) {
-//   const likeCountElement = homeContainer.querySelector(`[data-post-id="${postId}"] .like-count`);
-//   if (likeCountElement) {
-//     likeCountElement.textContent = count.toString();
-//   }
-// }
-// //ouvinte
-// likeButtons.forEach((likeButton) => {
-//   likeButton.addEventListener('click', async () => {
-//     const postId = likeButton.closest('.post').getAttribute('data-post-id');
-
-//     try {
-//       const hasLiked = await checkIfUserLiked(postId, 'user'); // Passa o ID do usuário atual aqui
-
-//       if (!hasLiked) {
-//         await likeCounter(postId, 'user'); // Passa o ID do usuário atual aqui
-
-//         const currentCount = parseInt(likeButton.nextElementSibling.textContent);
-//         const newCount = currentCount + 1;
-//         likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
-//       } else {
-//         await deslikeCounter(postId, 'user'); // Passa o ID do usuário atual aqui
-
-//         const currentCount = parseInt(likeButton.nextElementSibling.textContent);
-//         const newCount = currentCount - 1;
-//         likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
-//       }
-//     } catch (error) {
-//       console.error('Erro ao curtir o post', error);
-//       alert('Erro ao curtir o post. Tente novamente mais tarde.');
-//     }
-//   });
-// });
-
-// async function checkIfUserLiked(postId, userId) {
-//   try {
-//     const postRef = doc(db, 'posts', postId);
-//     const postSnapshot = await getDoc(postRef);
-
-//     if (postSnapshot.exists()) {
-//       const postData = postSnapshot.data();
-
-//       if (postData.likeUsers && postData.likeUsers.includes(userId)) {
-//         return true;
-//       }
-//     }
-
-//     return false;
-//   } catch (error) {
-//     console.error('Erro ao verificar se o usuário curtiu o post:', error);
-//     throw error;
-//   }
-// }
