@@ -182,6 +182,7 @@ export default async () => {
     const likeCount = document.createElement('span');
     likeCount.className = 'like-count';
     likeCount.textContent = '0';
+    likeCount.textContent = post.likeUsers.length;
 
     userTitle.appendChild(postIcon);
     userTitle.appendChild(postTitle);
