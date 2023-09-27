@@ -208,7 +208,7 @@ export default async () => {
     deleteButton.className = 'delete-button';
 
     const likeButton = document.createElement('button');
-    likeButton.innerHTML = `<i class='fa-regular fa-heart'></i>`;
+    likeButton.innerHTML = `<i class='fa-solid fa-heart'></i>`;
     likeButton.className = 'like-button';
 
     const likeCount = document.createElement('span');
