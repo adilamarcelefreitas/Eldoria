@@ -58,7 +58,7 @@ export default async () => {
       </header>
       <main id='main'>
         <picture>
-        <img src='../../assets/Logo-blue.png' id='logo-blue'>
+          <img src='../../assets/Logo-blue.png' id='logo-blue'>
         </picture>
         <div class='search-container'>
         <section class='section-search'>
@@ -113,21 +113,51 @@ export default async () => {
   function toggleNightMode() {
     isNightMode = !isNightMode;
     const body = document.body;
+    const postContainers = document.querySelectorAll('.post'); // Seleciona todos os containers de postagens
+    const newPostContainer = document.querySelector('.new-post-container'); // Seleciona o contêiner de nova postagem
+    const menuIcon = homeContainer.querySelector('#menu-icon'); // Seleciona o ícone do menu hamburguer
+    const menuItems = homeContainer.querySelector('.menu-items'); // Seleciona a lista de itens do menu hamburguer
 
-    body.classList.remove('login-background');
+    if (body) {
+      body.classList.remove('login-background');
 
-    if (isNightMode) {
-      // ativar o modo noturno
-      body.classList.add('night-mode');
-      body.classList.remove('background-white');
-      toggleButtonOn.style.display = 'block';
-      toggleButtonOff.style.display = 'none';
-    } else {
-      // desativar o modo noturno
-      body.classList.add('background-white');
-      body.classList.remove('night-mode');
-      toggleButtonOn.style.display = 'none';
-      toggleButtonOff.style.display = 'block';
+      if (isNightMode) {
+        // Ativar o modo noturno
+        body.classList.add('night-mode');
+        body.classList.remove('background-white');
+        toggleButtonOn.style.display = 'block';
+        toggleButtonOff.style.display = 'none';
+      } else {
+        // Desativar o modo noturno
+        body.classList.add('background-white');
+        body.classList.remove('night-mode');
+        toggleButtonOn.style.display = 'none';
+        toggleButtonOff.style.display = 'block';
+      }
+    }
+
+    if (postContainers) {
+      // Adicionar classe do modo noturno aos containers de postagens
+      postContainers.forEach((container) => {
+        if (container) {
+          container.classList.toggle('night-mode-post', isNightMode);
+        }
+      });
+    }
+
+    if (newPostContainer) {
+      // Adicionar classe do modo noturno ao contêiner de nova postagem
+      newPostContainer.classList.toggle('night-mode-post', isNightMode);
+    }
+
+    if (menuIcon) {
+      // Adicionar classe do modo noturno ao ícone do menu hamburguer
+      menuIcon.classList.toggle('night-mode-menu', isNightMode);
+    }
+
+    if (menuItems) {
+      // Adicionar classe do modo noturno à lista de itens do menu hamburguer
+      menuItems.classList.toggle('night-mode-menu', isNightMode);
     }
   }
 
@@ -162,7 +192,7 @@ export default async () => {
     postContent.textContent = post.post;
 
     const editButton = document.createElement('button');
-    editButton.innerHTML = `<img width='25px' height='auto' src="${editIconBlack}">`;
+    editButton.innerHTML = `<i class='fa-regular fa-pen-to-square'></i>`;
     editButton.className = 'edit-button';
 
     const userActions = document.createElement('div');
@@ -172,11 +202,13 @@ export default async () => {
     likeAction.className = 'like-actions';
 
     const deleteButton = document.createElement('button');
-    deleteButton.innerHTML = `<img width='25px' height='auto' src="${binIconBlack}">`;
+    deleteButton.innerHTML = `<i class="material-symbols-outlined">
+    delete
+    </i>`;
     deleteButton.className = 'delete-button';
 
     const likeButton = document.createElement('button');
-    likeButton.innerHTML = `<img width='25px' height='auto' src="${heartIconBlack}">`;
+    likeButton.innerHTML = `<i class='fa-regular fa-heart'></i>`;
     likeButton.className = 'like-button';
 
     const likeCount = document.createElement('span');
@@ -200,12 +232,13 @@ export default async () => {
     postFeed.appendChild(postContainer);
 
     likeButton.addEventListener('click', async () => {
+      location.reload(); //gambiara temporaria
       const postId = likeButton.closest('.post').getAttribute('data-post-id');
 
       const auth = getAuth();
       const user = auth.currentUser;
       const idUserAtual = user ? user.uid : null;
-      
+
       try {
         const hasLiked = await checkIfUserLiked(postId, idUserAtual);
 
@@ -219,14 +252,17 @@ export default async () => {
               const newCount = currentCount + 1;
               likeCountElement.textContent = newCount;
             } else {
-              console.error('O conteúdo do contador de curtidas não é um número válido:', likeCountElement.textContent);
+              console.error(
+                'O conteúdo do contador de curtidas não é um número válido:',
+                likeCountElement.textContent
+              );
             }
           } else {
             console.error('Elemento do contador de curtidas não encontrado.');
           }
         } else {
           await deslikeCounter(postId, idUserAtual);
-    
+
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
             const currentCount = parseInt(likeCountElement.textContent);
@@ -234,7 +270,10 @@ export default async () => {
               const newCount = currentCount - 1;
               likeCountElement.textContent = newCount;
             } else {
-              console.error('O conteúdo do contador de curtidas não é um número válido:', likeCountElement.textContent);
+              console.error(
+                'O conteúdo do contador de curtidas não é um número válido:',
+                likeCountElement.textContent
+              );
             }
           } else {
             console.error('Elemento do contador de curtidas não encontrado.');
@@ -406,7 +445,9 @@ export default async () => {
   async function handleLikeButtonClick(likeButton) {
     const postId = likeButton.closest('.post').getAttribute('data-post-id');
     const currentUserDisplayName = Auth.currentUser.displayName;
-    const likeCountElement = likeButton.closest('.post').querySelector('.like-count');
+    const likeCountElement = likeButton
+      .closest('.post')
+      .querySelector('.like-count');
 
     try {
       const hasLiked = await checkIfUserLiked(postId, 'idUserAtual');
