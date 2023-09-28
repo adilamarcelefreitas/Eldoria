@@ -1,22 +1,19 @@
 import firstLogoBlue from '../../assets/Logo-blue.png';
 import sendIcon from '../../assets/send.png';
-import heartIconWhite from '../../assets/heart-white.png';
-import heartIconBlack from '../../assets/heart-black.png';
-import editIconWhite from '../../assets/edit-white.png';
-import editIconBlack from '../../assets/edit-black.png';
-import binIconWhite from '../../assets/bin-white.png';
-import binIconBlack from '../../assets/bin-black.png';
+
 import {
   newPost,
   acessPost,
   likeCounter,
   deslikeCounter,
   deletePost,
+  editPost
 } from '../../firebase/firebaseStore.js';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, orderBy, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebase/firebaseInit.js';
+import { async } from 'regenerator-runtime';
 // import {
 //   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
 // } from '../../servicesFirebase/firebaseStore.js';
@@ -25,6 +22,58 @@ export default async () => {
   const homeContainer = document.createElement('div');
   homeContainer.classList.add('home-container');
   let isNewPostContainerCreated = false;
+
+  const modalDelete = document.createElement('div');
+  modalDelete.className = 'hide'
+  modalDelete.id = 'modal-delete';
+
+  const fadeModal = document.createElement('div');
+  fadeModal.className = 'hide'
+  fadeModal.id = 'fade-modal';
+
+  const messageDelete = document.createElement('p');
+  messageDelete.id = 'message-delete';
+
+  const confirmDelete = document.createElement('button');
+  confirmDelete.id = 'confirm-delete';
+
+  const cancelDelete = document.createElement('button');
+  cancelDelete.id = 'cancel-delete';
+
+  homeContainer.appendChild(modalDelete);
+  homeContainer.appendChild(fadeModal);
+  modalDelete.appendChild(messageDelete);
+  modalDelete.appendChild(confirmDelete);
+  modalDelete.appendChild(cancelDelete);
+
+
+  const modal = document.querySelector('#modal-delete');
+  const fade = document.querySelector('#fade-modal');
+
+  function openModal() {
+    modal.classList.remove('hide');
+    fade.classList.remove('hide');
+  }
+
+  function closeModal() {
+    modal.classList.add('hide');
+    fade.classList.add('hide');
+  }
+
+  const confirmDeleteButton = document.querySelector('confirm-delete');
+  const cancelDeleteButton = document.querySelector('cancel-delete');
+  
+  if (confirmDeleteButton && cancelDeleteButton) {
+    confirmDeleteButton.addEventListener('click', async () => {
+      // Código de exclusão do post
+      closeModal(); // Fecha o modal após a exclusão
+    });
+  
+    cancelDeleteButton.addEventListener('click', closeModal);
+  } else {
+    console.error('Elementos não encontrados no DOM');
+  }
+  
 
   const content = `
       <header class = 'header-home'>
@@ -165,11 +214,15 @@ export default async () => {
   toggleButtonOn.addEventListener('click', toggleNightMode);
   toggleButtonOff.addEventListener('click', toggleNightMode);
 
+  //fim da função
+
   const auth = getAuth();
   const existingPosts = await acessPost();
   existingPosts.forEach((item) => renderPost(item));
 
-  function renderPost(post) {
+  //função render post
+
+  function renderPost(post, user) {
     console.log(post);
 
     const postFeed = homeContainer.querySelector('#post-feed');
@@ -191,6 +244,11 @@ export default async () => {
     const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
+    //aqui to criando os elementos de edição e exclusão
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = `<i class="material-symbols-outlined">delete</i>`;
+    deleteButton.className = 'delete-button';
+
     const editButton = document.createElement('button');
     editButton.innerHTML = `<i class='fa-regular fa-pen-to-square'></i>`;
     editButton.className = 'edit-button';
@@ -201,20 +259,13 @@ export default async () => {
     const likeAction = document.createElement('div');
     likeAction.className = 'like-actions';
 
-    const deleteButton = document.createElement('button');
-    deleteButton.innerHTML = `<i class="material-symbols-outlined">
-    delete
-    </i>`;
-    deleteButton.className = 'delete-button';
-
     const likeButton = document.createElement('button');
     likeButton.innerHTML = `<i class='fa-solid fa-heart'></i>`;
     likeButton.className = 'like-button';
 
     const likeCount = document.createElement('span');
     likeCount.className = 'like-count';
-    likeCount.textContent = '0';
-    likeCount.textContent = post.likeUsers.length;
+    likeCount.textContent = post.likeUsers ? post.likeUsers.length.toString() : '0';
 
     userTitle.appendChild(postIcon);
     userTitle.appendChild(postTitle);
@@ -231,26 +282,104 @@ export default async () => {
     postContainer.setAttribute('data-post-id', post.id);
     postFeed.appendChild(postContainer);
 
-    likeButton.addEventListener('click', async () => {
-      location.reload(); //gambiara temporaria
-      const postId = likeButton.closest('.post').getAttribute('data-post-id');
+    //logica para os botões de editar e lixeira so aparecer para quem for dono do post
 
+    postContainer.setAttribute('data-post-id', post.id);
+    postContainer.setAttribute('data-post-author-id', post.authorId);
+
+    //verifica se o autor do post é o mesmo que o usuario autenticado
+   const isAuthor = post.authorId === user;
+
+    //adicionei os elementos de edição e exclusão apenas se o usario for autor
+    //if (isAuthor) {
+
+      // userActions.appendChild(deleteButton);
+      // userContainer.appendChild(editButton);
+    //}
+
+    //adicionei um manipulador de evento para o botão de exclusão
+    deleteButton.addEventListener('click', () => {
+      if (isAuthor) {
+        openModal();
+        //executei a logica de exclusão
+        // const postId = deleteButton.closest('.post').getAttribute('data-post-id');
+        // await deletePost(postId);
+        // postContainer.remove();
+      }
+    })
+
+    editButton.addEventListener('click', async () => {
+      if (isAuthor) {
+        // Recupera o conteúdo atual do post
+        const postId = postContainer.getAttribute('data-post-id');
+        const postContentElement = postContainer.querySelector('p'); // Obtém o elemento do conteúdo do post
+
+        let editForm = postContainer.querySelector('.edit-form');
+
+        // Cria um formulário de edição preenchido com o conteúdo atual
+        if (!editForm) {
+        const editForm = document.createElement('form');
+        editForm.className = 'edit-form';
+
+        const editTextArea = document.createElement('textarea');
+        editTextArea.value = postContentElement.textContent; // Usa o conteúdo atual
+        editForm.appendChild(editTextArea);
+
+        // Adiciona um botão "Salvar" ao formulário
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Salvar';
+        editForm.appendChild(saveButton);
+
+        // Adiciona o formulário de edição ao postContainer
+        userActions.appendChild(editForm);
+
+        // Adiciona um manipulador de evento para o botão "Salvar"
+        saveButton.addEventListener('click', async () => {
+          const newContent = editTextArea.value;
+
+          // Atualiza o conteúdo do post no banco de dados
+          try {
+            // Usa a função de edição no Firebase Firestore para atualizar o conteúdo
+            await editPost(postId, newContent);
+
+            // Atualiza o conteúdo na interface do usuário
+            postContentElement.textContent = newContent;
+
+            // Remove o formulário de edição
+            
+            editForm.style.display = 'none';
+          } catch (error) {
+            console.error('Erro ao editar o post', error);
+            alert('Erro ao editar o post. Tente novamente mais tarde.');
+          }
+        });
+      } else {
+        editForm.style.display = 'block';
+      }
+    }
+    });
+
+    likeButton.addEventListener('click', async () => {
+      location.reload(); //temporário reload de page
+      const postId = likeButton.closest('.post').getAttribute('data-post-id');
       const auth = getAuth();
       const user = auth.currentUser;
       const idUserAtual = user ? user.uid : null;
 
       try {
         const hasLiked = await checkIfUserLiked(postId, idUserAtual);
+        const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+        console.log('likeCountElement:', likeCountElement);
 
         if (!hasLiked) {
           await likeCounter(postId, idUserAtual);
-
+          console.log('Curtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
             const currentCount = parseInt(likeCountElement.textContent);
             if (!isNaN(currentCount)) {
               const newCount = currentCount + 1;
-              likeCountElement.textContent = newCount;
+              likeCountElement.textContent = newCount.toString(); // Atualiza o contador de likes
             } else {
               console.error(
                 'O conteúdo do contador de curtidas não é um número válido:',
@@ -262,13 +391,13 @@ export default async () => {
           }
         } else {
           await deslikeCounter(postId, idUserAtual);
-
+          console.log('Descurtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
             const currentCount = parseInt(likeCountElement.textContent);
             if (!isNaN(currentCount)) {
               const newCount = currentCount - 1;
-              likeCountElement.textContent = newCount;
+              likeCountElement.textContent = newCount.toString(); // Atualiza o contador de likes
             } else {
               console.error(
                 'O conteúdo do contador de curtidas não é um número válido:',
@@ -284,7 +413,20 @@ export default async () => {
         alert('Erro ao curtir o post. Tente novamente mais tarde.');
       }
     });
+
   }
+
+  // const toggleModal = () => {
+  //   modal.classList.toggle('hide');
+  //   fade.classList.toggle('hide');
+  // }
+
+  // function openModal() {
+
+
+
+  //   toggleModal();
+  // }
 
   function renderPostsIfAuthenticated(userName, idUser) {
     // const newPostButton = homeContainer.querySelector('.new-post i');
