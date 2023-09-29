@@ -7,73 +7,24 @@ import {
   likeCounter,
   deslikeCounter,
   deletePost,
-  editPost
+  editPost,
 } from '../../firebase/firebaseStore.js';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
-import { doc, getDoc, collection, orderBy, Timestamp } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  collection,
+  orderBy,
+  Timestamp,
+} from 'firebase/firestore';
 import { db } from '../../firebase/firebaseInit.js';
 import { async } from 'regenerator-runtime';
-// import {
-//   accessPost, editPost, likeCounter, deslikeCounter, deletePost,
-// } from '../../servicesFirebase/firebaseStore.js';
 
 export default async () => {
   const homeContainer = document.createElement('div');
   homeContainer.classList.add('home-container');
   let isNewPostContainerCreated = false;
-
-  const modalDelete = document.createElement('div');
-  modalDelete.className = 'hide'
-  modalDelete.id = 'modal-delete';
-
-  const fadeModal = document.createElement('div');
-  fadeModal.className = 'hide'
-  fadeModal.id = 'fade-modal';
-
-  const messageDelete = document.createElement('p');
-  messageDelete.id = 'message-delete';
-
-  const confirmDelete = document.createElement('button');
-  confirmDelete.id = 'confirm-delete';
-
-  const cancelDelete = document.createElement('button');
-  cancelDelete.id = 'cancel-delete';
-
-  homeContainer.appendChild(modalDelete);
-  homeContainer.appendChild(fadeModal);
-  modalDelete.appendChild(messageDelete);
-  modalDelete.appendChild(confirmDelete);
-  modalDelete.appendChild(cancelDelete);
-
-
-  const modal = document.querySelector('#modal-delete');
-  const fade = document.querySelector('#fade-modal');
-
-  function openModal() {
-    modal.classList.remove('hide');
-    fade.classList.remove('hide');
-  }
-
-  function closeModal() {
-    modal.classList.add('hide');
-    fade.classList.add('hide');
-  }
-
-  const confirmDeleteButton = document.querySelector('confirm-delete');
-  const cancelDeleteButton = document.querySelector('cancel-delete');
-  
-  if (confirmDeleteButton && cancelDeleteButton) {
-    confirmDeleteButton.addEventListener('click', async () => {
-      // Código de exclusão do post
-      closeModal(); // Fecha o modal após a exclusão
-    });
-  
-    cancelDeleteButton.addEventListener('click', closeModal);
-  } else {
-    console.error('Elementos não encontrados no DOM');
-  }
-  
 
   const content = `
       <header class = 'header-home'>
@@ -223,7 +174,7 @@ export default async () => {
   //função render post
 
   function renderPost(post, user) {
-    console.log(post);
+    console.log(post, user);
 
     const postFeed = homeContainer.querySelector('#post-feed');
     const postContainer = document.createElement('div');
@@ -241,6 +192,9 @@ export default async () => {
     const postTitle = document.createElement('h2');
     postTitle.textContent = `${post.userName}`;
 
+    const postContentContainer = document.createElement('div');
+    postContentContainer.className = 'post-container';
+
     const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
@@ -248,11 +202,15 @@ export default async () => {
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = `<i class="material-symbols-outlined">delete</i>`;
     deleteButton.className = 'delete-button';
+    console.log(post.authorId, auth.currentUser.uid);
 
-    const editButton = document.createElement('button');
-    editButton.innerHTML = `<i class='fa-regular fa-pen-to-square'></i>`;
-    editButton.className = 'edit-button';
+    let editButton = '';
 
+    if (post.idUser === auth.currentUser.uid) {
+      editButton = document.createElement('button');
+      editButton.innerHTML = `<i class='fa-regular fa-pen-to-square'></i>`;
+      editButton.className = 'edit-button';
+    }
     const userActions = document.createElement('div');
     userActions.className = 'user-actions';
 
@@ -265,14 +223,17 @@ export default async () => {
 
     const likeCount = document.createElement('span');
     likeCount.className = 'like-count';
-    likeCount.textContent = post.likeUsers ? post.likeUsers.length.toString() : '0';
+    likeCount.textContent = post.likeUsers
+      ? post.likeUsers.length.toString()
+      : '0';
 
     userTitle.appendChild(postIcon);
     userTitle.appendChild(postTitle);
     userContainer.appendChild(userTitle);
-    userContainer.appendChild(editButton);
+    if (editButton) userContainer.appendChild(editButton);
     postContainer.appendChild(userContainer);
-    postContainer.appendChild(postContent);
+    postContainer.appendChild(postContentContainer);
+    postContentContainer.appendChild(postContent);
     postContainer.appendChild(userActions);
 
     userActions.appendChild(deleteButton);
@@ -287,77 +248,95 @@ export default async () => {
     postContainer.setAttribute('data-post-id', post.id);
     postContainer.setAttribute('data-post-author-id', post.authorId);
 
-    //verifica se o autor do post é o mesmo que o usuario autenticado
-   const isAuthor = post.authorId === user;
 
-    //adicionei os elementos de edição e exclusão apenas se o usario for autor
-    //if (isAuthor) {
-
-      // userActions.appendChild(deleteButton);
-      // userContainer.appendChild(editButton);
-    //}
-
-    //adicionei um manipulador de evento para o botão de exclusão
     deleteButton.addEventListener('click', () => {
-      if (isAuthor) {
-        openModal();
-        //executei a logica de exclusão
-        // const postId = deleteButton.closest('.post').getAttribute('data-post-id');
-        // await deletePost(postId);
-        // postContainer.remove();
-      }
-    })
+      console.log('Clique no botão de exclusão!');
+      const { fade, modal, deleteModal } = modalDelete();
 
-    editButton.addEventListener('click', async () => {
-      if (isAuthor) {
+      deleteModal.addEventListener('click', async () => {
+        try {
+          await deletePost(post.id);
+          postContainer.remove();
+        } catch (error) {
+          console.error('Erro ao excluir o post', error);
+        } finally {
+          modal.remove();
+          fade.remove();
+        }
+      });
+    });
+
+    if (editButton) {
+      editButton.addEventListener('click', async () => {
         // Recupera o conteúdo atual do post
         const postId = postContainer.getAttribute('data-post-id');
         const postContentElement = postContainer.querySelector('p'); // Obtém o elemento do conteúdo do post
+        const edit = postContainer.querySelector('.edit-form');
 
-        let editForm = postContainer.querySelector('.edit-form');
-
+        likeButton.style.display = 'none';
+        likeCount.style.display = 'none';
         // Cria um formulário de edição preenchido com o conteúdo atual
-        if (!editForm) {
-        const editForm = document.createElement('form');
-        editForm.className = 'edit-form';
+        if (!edit) {
+          const editForm = document.createElement('form');
+          editForm.className = 'edit-form';
 
-        const editTextArea = document.createElement('textarea');
-        editTextArea.value = postContentElement.textContent; // Usa o conteúdo atual
-        editForm.appendChild(editTextArea);
+          const editTextArea = document.createElement('textarea');
+          editTextArea.value = postContentElement.textContent; // Usa o conteúdo atual
+          editTextArea.className = 'edit-textarea';
+          editForm.appendChild(editTextArea);
 
-        // Adiciona um botão "Salvar" ao formulário
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Salvar';
-        editForm.appendChild(saveButton);
+          // Adiciona um botão "Salvar" ao formulário
+          const saveButton = document.createElement('button');
+          // saveButton.textContent = 'salvar';
+          saveButton.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
+          editForm.appendChild(saveButton);
 
-        // Adiciona o formulário de edição ao postContainer
-        userActions.appendChild(editForm);
+          const cancelButton = document.createElement('button');
+          cancelButton.innerHTML = `<i class="fa-regular fa-circle-xmark"></i>`;
 
-        // Adiciona um manipulador de evento para o botão "Salvar"
-        saveButton.addEventListener('click', async () => {
-          const newContent = editTextArea.value;
+          userActions.appendChild(cancelButton);
+          userActions.appendChild(saveButton);
 
-          // Atualiza o conteúdo do post no banco de dados
-          try {
-            // Usa a função de edição no Firebase Firestore para atualizar o conteúdo
-            await editPost(postId, newContent);
+          // Adiciona o formulário de edição ao postContentContainer
+          postContentContainer.replaceChild(editForm, postContentElement);
 
-            // Atualiza o conteúdo na interface do usuário
-            postContentElement.textContent = newContent;
+          // Adiciona um manipulador de evento para o botão "Salvar"
+          saveButton.addEventListener('click', async () => {
+            const newContent = editTextArea.value;
 
-            // Remove o formulário de edição
-            
-            editForm.style.display = 'none';
-          } catch (error) {
-            console.error('Erro ao editar o post', error);
-            alert('Erro ao editar o post. Tente novamente mais tarde.');
-          }
-        });
-      } else {
-        editForm.style.display = 'block';
-      }
+            // Atualiza o conteúdo do post no banco de dados
+            try {
+              // Usa a função de edição no Firebase Firestore para atualizar o conteúdo
+              await editPost(postId, newContent);
+              // Atualiza o conteúdo na interface do usuário
+              postContentElement.textContent = newContent;
+
+              likeButton.style.display = 'block';
+              likeCount.style.display = 'inline-block';
+              // Remove o formulário de edição
+              editForm.style.display = 'none';
+              userActions.removeChild(saveButton);
+              userActions.removeChild(cancelButton);
+            } catch (error) {
+              console.error('Erro ao editar o post', error);
+              alert('Erro ao editar o post. Tente novamente mais tarde.');
+            }
+          });
+
+          cancelButton.addEventListener('click', () => {
+            editTextArea.value = postContentElement.textContent;
+
+            likeButton.style.display = 'block';
+            likeCount.style.display = 'inline-block';
+
+            userActions.removeChild(saveButton);
+            userActions.removeChild(cancelButton);
+          });
+        } else {
+          edit.style.display = 'block';
+        }
+      });
     }
-    });
 
     likeButton.addEventListener('click', async () => {
       location.reload(); //temporário reload de page
@@ -368,7 +347,9 @@ export default async () => {
 
       try {
         const hasLiked = await checkIfUserLiked(postId, idUserAtual);
-        const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+        const likeCountElement = document.querySelector(
+          `[data-post-id="${postId}"] .like-count`
+        );
         console.log('likeCountElement:', likeCountElement);
 
         if (!hasLiked) {
@@ -413,23 +394,45 @@ export default async () => {
         alert('Erro ao curtir o post. Tente novamente mais tarde.');
       }
     });
-
   }
 
-  // const toggleModal = () => {
-  //   modal.classList.toggle('hide');
-  //   fade.classList.toggle('hide');
-  // }
+  const modalDelete = () => {
+    console.log('Modal está sendo criado!');
+    const templateDelete = `
+      <div id='fade' class='hide'></div>
+      <div id='modal' class='hide'>
+        <p class='message-delete'>Tem certeza que deseja excluir a publicação?</p> 
+        <div class='button-modal'>
+         <button id='cancel-modal'>Cancelar</button>
+          <button id='delete-modal'>Excluir</button>
+        </div>
+      </div>  
+    `;
+    const modalContainer = document.createElement('section');
+    modalContainer.classList.add('modal-container');
+    modalContainer.innerHTML = templateDelete;
+    document.body.appendChild(modalContainer);
 
-  // function openModal() {
+    const modal = modalContainer.querySelector('#modal');
+    const fade = modalContainer.querySelector('#fade');
+    const deleteModal = modalContainer.querySelector('#delete-modal');
+    const cancelModal = modalContainer.querySelector('#cancel-modal');
 
+    cancelModal.addEventListener('click', () => {
+      modalContainer.remove();
+    });
 
+    deleteModal.addEventListener('click', async () => {
+      await deletePost();
+      modalContainer.remove();
+    });
 
-  //   toggleModal();
-  // }
+    return { fade, modal, deleteModal };
+  };
 
   function renderPostsIfAuthenticated(userName, idUser) {
     // const newPostButton = homeContainer.querySelector('.new-post i');
+    const postFeed = homeContainer.querySelector('#post-feed');
     const newPostContainerLocation = homeContainer.querySelector(
       '#new-post-container'
     );
@@ -495,19 +498,30 @@ export default async () => {
 
           renderPost(newPostData);
           postContentTextarea.value = '';
-          // alert('Postagem publicada com sucesso!');
+
+          const timestampElement = document.createElement('p');
+          timestampElement.className = 'post-timestamp';
+          timestampElement.textContent = formatTimestamp(newPostData.timestamp);
+
+          //timestampElement.appendChild(postFeed);
+          //postFeed.appendChild(timestampElement));
+          postContainer.appendChild(timestampElement);
+
+          postFeed.insertBefore(newPostContainer, postFeed.firstChild);
         } catch (error) {
           console.error('Erro ao criar postagem', error);
           alert('Erro ao criar postagem. Tente novamente mais tarde.');
         }
       });
 
-      const postFeed = homeContainer.querySelector('#post-feed');
-      postFeed.appendChild(newPostContainer);
-
       newPostContainerLocation.appendChild(newPostContainer);
-      isNewPostContainerCreated = true;
     }
+  }
+
+    //Função para formatar o timestamp para uma exibição
+  function formatTimestamp(timestamp) {
+      const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+      return new Date(timestamp).toLocaleDateString(undefined, options);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -516,9 +530,9 @@ export default async () => {
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const username = user.displayName; // Obtenha o nome do usuário
+      const username = user.displayName;
       const userId = user.uid;
-      // O usuário está autenticado, então busque e renderize os posts existentes
+
       try {
         const existingPosts = await acessPost();
         renderPost(existingPosts);
@@ -561,7 +575,7 @@ export default async () => {
     });
   }
 
-  // Evento de clique no botão "Sair"
+  // Evento de clique no botão "sair"
   const logoutButton = homeContainer.querySelector('#btn-logout');
   logoutButton.addEventListener('click', logout);
 

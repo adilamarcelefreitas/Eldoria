@@ -55,4 +55,13 @@ export const deslikeCounter = async (postId, usernameUser) => updateDoc(doc(db, 
   likeUsers: arrayRemove(usernameUser),
 });
 
-export const deletePost = async (postId) => deleteDoc(doc(db, 'posts', postId));
+export const deletePost = async (postId) => {
+  try {
+      // Use a função deleteDoc para excluir o documento com o ID do post
+      await deleteDoc(doc(db, 'posts', postId));
+      console.log('Post excluído com sucesso');
+  } catch (error) {
+      console.error('Erro ao excluir o post:', error);
+      throw error; // Rejeita a promessa para que o erro possa ser tratado no local de chamada
+  }
+};

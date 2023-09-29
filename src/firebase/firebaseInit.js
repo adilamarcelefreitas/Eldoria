@@ -8,12 +8,12 @@ import { getFirestore } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCchPt5vGR85QPy3udktqar_rkKMSDPW9g",
-  authDomain: "eldoria---o-retorno.firebaseapp.com",
-  projectId: "eldoria---o-retorno",
-  storageBucket: "eldoria---o-retorno.appspot.com",
-  messagingSenderId: "930958267731",
-  appId: "1:930958267731:web:f65f17a1ea610a636bfda6"
+  apiKey: "AIzaSyAP8GvODNyvYJMcm4Dxl_CqhszbL2hzWOo",
+  authDomain: "eldoria-9a73d.firebaseapp.com",
+  projectId: "eldoria-9a73d",
+  storageBucket: "eldoria-9a73d.appspot.com",
+  messagingSenderId: "680173100269",
+  appId: "1:680173100269:web:84f508f3b10b565dc840e4"
 };
 
 // Initialize Firebase
