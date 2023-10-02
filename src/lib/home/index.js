@@ -45,13 +45,13 @@ export default async () => {
               <img src='../../assets/Logo-blue.png' id='logo-blue-dektop'>
             </picture>
             <ul class='menu-items-desktop'>
-              <li><a href=""><i class="fa-solid fa-house"></i></a><span class=''>Página incial</span></li>
-              <li>
-                <i class='fa-solid fa-magnifying-glass search-icon-desktop'></i>
-                <input type='text' class='search-input-desktop' placeholder='pesquisar'/>
+              <li class='home-page-icons'><a href=""><i class="fa-solid fa-house"></i></a><span class='menu-text-desktop'>Página inicial</span></li>
+              <li class='home-page-icons'>
+              <i class='fa-solid fa-magnifying-glass search-icon-desktop'></i>
+              <input type='text' class='search-input-desktop menu-text-desktop' placeholder=Pesquisar...>
               </li>
-              <li><a href=""><i class='fa-solid fa-circle-user icon-user-desktop'></i></a><span class='menu-text'>Perfil</span></li>
-              <li><button type='button' id='btn-logout-desktop'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text'>Sair</span></li>
+              <li class='home-page-icons'><i class='fa-solid fa-circle-user icon-user-desktop'></i></a><span class='menu-text-desktop'>Perfil</span></li>
+              <li class='home-page-icons logout'><button type='button' id='btn-logout-desktop'><i class='fa-solid fa-arrow-right-from-bracket'></i></button><span class='menu-text-desktop'>Sair</span></li>
             </ul>
           </div>
         </nav>
@@ -72,9 +72,9 @@ export default async () => {
       </main>
       
       <footer class='footer-home'>
-        <div class='new-post'>
-        <i class="fa-solid fa-plus" id="publish-button"> </i>
-        </div>
+        <button id='scrollToTop' class='new-post'>
+        <i class="fa-solid fa-plus" id="publish-button"></i>
+        </button>
       </footer>
     `;
 
@@ -248,7 +248,6 @@ export default async () => {
     postContainer.setAttribute('data-post-id', post.id);
     postContainer.setAttribute('data-post-author-id', post.authorId);
 
-
     deleteButton.addEventListener('click', () => {
       console.log('Clique no botão de exclusão!');
       const { fade, modal, deleteModal } = modalDelete();
@@ -268,73 +267,73 @@ export default async () => {
 
     if (editButton) {
       editButton.addEventListener('click', async () => {
+        likeButton.style.display = 'none';
+        likeCount.style.display = 'none';
         // Recupera o conteúdo atual do post
         const postId = postContainer.getAttribute('data-post-id');
         const postContentElement = postContainer.querySelector('p'); // Obtém o elemento do conteúdo do post
-        const edit = postContainer.querySelector('.edit-form');
+        const originalContent = postContentElement.textContent;
 
-        likeButton.style.display = 'none';
-        likeCount.style.display = 'none';
+        const editForm = document.createElement('form');
+        editForm.className = 'edit-form';
+
         // Cria um formulário de edição preenchido com o conteúdo atual
-        if (!edit) {
-          const editForm = document.createElement('form');
-          editForm.className = 'edit-form';
+        const editTextArea = document.createElement('textarea');
+        editTextArea.value = originalContent; // Usa o conteúdo atual
+        editTextArea.className = 'edit-textarea';
+        editForm.appendChild(editTextArea);
 
-          const editTextArea = document.createElement('textarea');
-          editTextArea.value = postContentElement.textContent; // Usa o conteúdo atual
-          editTextArea.className = 'edit-textarea';
-          editForm.appendChild(editTextArea);
+        // const editButtonsContainer = document.createElement('div');
+        // editButtonsContainer.className = 'edit-btn-container';
+        // userActions.appendChild(editButtonsContainer);
 
-          // Adiciona um botão "Salvar" ao formulário
-          const saveButton = document.createElement('button');
-          // saveButton.textContent = 'salvar';
-          saveButton.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
-          editForm.appendChild(saveButton);
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
+        saveButton.className = 'save-button';
+        editForm.appendChild(saveButton);
+        // editButtonsContainer.appendChild(saveButton);
 
-          const cancelButton = document.createElement('button');
-          cancelButton.innerHTML = `<i class="fa-regular fa-circle-xmark"></i>`;
+        const cancelButton = document.createElement('button');
+        cancelButton.innerHTML = `<i class="fa-regular fa-circle-xmark"></i>`;
+        cancelButton.className = 'cancel-button';
+        editForm.appendChild(cancelButton);
+        // editButtonsContainer.appendChild(cancelButton);
 
-          userActions.appendChild(cancelButton);
-          userActions.appendChild(saveButton);
+        postContentContainer.replaceChild(editForm, postContentElement);
 
-          // Adiciona o formulário de edição ao postContentContainer
-          postContentContainer.replaceChild(editForm, postContentElement);
+        // Adiciona um manipulador de evento para o botão "Salvar"
+        saveButton.addEventListener('click', async (event) => {
+          event.preventDefault();
+          const newContent = editTextArea.value;
 
-          // Adiciona um manipulador de evento para o botão "Salvar"
-          saveButton.addEventListener('click', async () => {
-            const newContent = editTextArea.value;
-
-            // Atualiza o conteúdo do post no banco de dados
+          if (newContent !== originalContent) {
             try {
               // Usa a função de edição no Firebase Firestore para atualizar o conteúdo
               await editPost(postId, newContent);
               // Atualiza o conteúdo na interface do usuário
               postContentElement.textContent = newContent;
 
-              likeButton.style.display = 'block';
+              likeButton.style.display = 'inline-block';
               likeCount.style.display = 'inline-block';
-              // Remove o formulário de edição
-              editForm.style.display = 'none';
-              userActions.removeChild(saveButton);
-              userActions.removeChild(cancelButton);
+
+              postContentContainer.replaceChild(postContentElement, editForm);
             } catch (error) {
               console.error('Erro ao editar o post', error);
               alert('Erro ao editar o post. Tente novamente mais tarde.');
             }
-          });
+          } else {
+            postContentContainer.replaceChild(postContentElement, editForm);
+          }
+        });
 
-          cancelButton.addEventListener('click', () => {
-            editTextArea.value = postContentElement.textContent;
+        cancelButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          postContentElement.textContent = originalContent;
+          postContentContainer.replaceChild(postContentElement, editForm);
 
-            likeButton.style.display = 'block';
-            likeCount.style.display = 'inline-block';
-
-            userActions.removeChild(saveButton);
-            userActions.removeChild(cancelButton);
-          });
-        } else {
-          edit.style.display = 'block';
-        }
+          likeButton.style.display = 'inline-block';
+          likeCount.style.display = 'inline-block';
+        });
       });
     }
 
@@ -347,9 +346,7 @@ export default async () => {
 
       try {
         const hasLiked = await checkIfUserLiked(postId, idUserAtual);
-        const likeCountElement = document.querySelector(
-          `[data-post-id="${postId}"] .like-count`
-        );
+        const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
         console.log('likeCountElement:', likeCountElement);
 
         if (!hasLiked) {
@@ -433,9 +430,7 @@ export default async () => {
   function renderPostsIfAuthenticated(userName, idUser) {
     // const newPostButton = homeContainer.querySelector('.new-post i');
     const postFeed = homeContainer.querySelector('#post-feed');
-    const newPostContainerLocation = homeContainer.querySelector(
-      '#new-post-container'
-    );
+    const newPostContainerLocation = homeContainer.querySelector('#new-post-container');
 
     if (!isNewPostContainerCreated) {
       const newPostContainer = document.createElement('div');
@@ -493,7 +488,7 @@ export default async () => {
           await newPost(
             newPostData.post,
             newPostData.userName,
-            newPostData.idUser
+            newPostData.idUser,
           );
 
           renderPost(newPostData);
@@ -503,9 +498,7 @@ export default async () => {
           timestampElement.className = 'post-timestamp';
           timestampElement.textContent = formatTimestamp(newPostData.timestamp);
 
-          //timestampElement.appendChild(postFeed);
-          //postFeed.appendChild(timestampElement));
-          postContainer.appendChild(timestampElement);
+          newPostContainer.appendChild(timestampElement);
 
           postFeed.insertBefore(newPostContainer, postFeed.firstChild);
         } catch (error) {
@@ -518,10 +511,10 @@ export default async () => {
     }
   }
 
-    //Função para formatar o timestamp para uma exibição
+  //Função para formatar o timestamp para uma exibição
   function formatTimestamp(timestamp) {
-      const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return new Date(timestamp).toLocaleDateString(undefined, options);
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    return new Date(timestamp).toLocaleDateString(undefined, options);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -589,9 +582,7 @@ export default async () => {
   const likeButtons = document.querySelectorAll('.like-button');
 
   function updateLikeCount(postId, count) {
-    const likeCountElement = document.querySelector(
-      `[data-post-id="${postId}"] .like-count`
-    );
+    const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
     if (likeCountElement) {
       likeCountElement.textContent = count.toString();
     }
@@ -649,6 +640,32 @@ export default async () => {
       console.error('Erro ao verificar se o usuário curtiu o post:', error);
       throw error;
     }
+  }
+
+  // Função para mostrar/ocultar o botão de scroll
+  function toggleScrollToTopButton() {
+    const scrollToTopButton = document.querySelector('.footer-home');
+  
+    if (scrollToTopButton) {
+      if (window.scrollY > 100) {
+        scrollToTopButton.style.display = 'block';
+      } else {
+        scrollToTopButton.style.display = 'none';
+      }
+    } else {
+      console.error('Erro');
+    }
+  }
+
+  // Adiciona um ouvinte de evento de rolagem para chamar a função
+  window.addEventListener('scroll', toggleScrollToTopButton);
+
+  // Adiciona um ouvinte de evento de clique para rolar para o topo
+  const scrollToTop = homeContainer.querySelector('#scrollToTop');
+  if (scrollToTop) {
+    scrollToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   return homeContainer;
