@@ -1,12 +1,12 @@
-import { getAuth } from 'firebase/auth';
+import { getAuth } from "firebase/auth";
 // Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
 
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
+// Your web app"s Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAP8GvODNyvYJMcm4Dxl_CqhszbL2hzWOo",
   authDomain: "eldoria-9a73d.firebaseapp.com",

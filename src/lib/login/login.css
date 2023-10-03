@@ -87,6 +87,7 @@ h2{
     font-weight: 700;
     cursor: pointer;
     border: 1px solid black;
+    margin-top: 1rem;
 }
 
 .button-password {
@@ -277,33 +278,6 @@ footer {
         align-items: center;
         margin-right: 5rem;
     }   
-
-    .footer-info {
-        display: flex;
-        background-color: #197B91;
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        font-size: 16px;
-        color: white;
-        height: 3.3rem;
-        width: 100%;
-        margin-top: auto;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-    
-    .footer-info p {
-        color: white;
-        text-decoration: none; 
-    }
-
-    .fa-brands, .fa-github {
-        color:white;
-        cursor: pointer;
-    }
 
     .txt-account{
         margin-top: 20px;
