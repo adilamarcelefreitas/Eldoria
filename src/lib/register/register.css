@@ -2,14 +2,15 @@
   margin: 0;
   padding: 0;
 }
-    
+
 body {
-  background-color: #22A6C4;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  font-size: 18px ; 
+  background-color: #22a6c4;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 18px;
 }
 
-.images-register{
+.images-register {
   text-align: center;
 }
 
@@ -17,8 +18,8 @@ body {
   width: auto;
   height: 3.5rem;
 }
-        
-header {
+
+.header {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,41 +28,49 @@ header {
   margin-top: 20px;
 }
 
+h2 {
+  margin: 8px 0px 10px;
+}
 .register-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100vh;
 }
 
-.section-register{
+#container-register {
+  align-items: center;
+}
+
+.section-register {
   border: 1px solid white;
   border-radius: 12px;
   background-color: white;
   display: flex;
   flex-direction: column;
   text-align: center;
-  height: auto;
-  width: 16rem;
+  height: 30rem;
+  width: 19rem;
   justify-content: center;
   align-items: center;
 }
 
-.input-register{
+.input-register {
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
 }
-      
-.form-register{
-  padding-left: 15px; 
+
+.form-register {
+  padding-left: 15px;
   border-radius: 20px;
-  height: 35px;  
+  height: 35px;
   width: 14.6rem;
   margin-bottom: 18px;
   border: 1px solid black;
 }
 
-.btn-signIn{
+.btn-signIn {
   background-color: black;
   color: white;
   border-radius: 20px;
@@ -72,7 +81,6 @@ header {
   cursor: pointer;
   margin-bottom: 10px;
   border: 1px solid black;
-
 }
 
 .click-here {
@@ -80,8 +88,8 @@ header {
   border: none;
   color: black;
   font-size: 13.5px;
-  margin-top: 10px;  
-  cursor: pointer; 
+  margin-top: 10px;
+  cursor: pointer;
   font-weight: 400;
 }
 
@@ -90,8 +98,8 @@ header {
   border: none;
   color: black;
   font-size: 13.5px;
-  margin-top: 10px;  
-  cursor: pointer; 
+  margin-top: 10px;
+  cursor: pointer;
 }
 
 .img-girl-register {
@@ -104,82 +112,70 @@ header {
     height: 8vh;
     width: 30vh;
   }
-  
+
   header p {
-  font-size: 23px;
-  margin-top: 15px;
+    font-size: 23px;
+    margin-top: 15px;
   }
- 
-  .section-register{
-    margin: 6.25rem 2.5rem 0rem;
-    padding: 2.2rem 2.2rem 1.6rem;
+
+  .images-register {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  
-  .img-girl-register{
+  .img-girl-register {
     display: none;
   }
 }
 
 @media screen and (min-width: 1024px) {
-  
-    .images-register{
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-top: 6.9rem;      
-    }
-
-    .img-girl-register{
-      display: block;
-      height: 24vw;
-      width: 27vw;
-      margin: 20px 0px;
-      
-    }
-
-    .register-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: row;
+  .images-register {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 5rem;
   }
 
-    .logo {
-      height: 8vh;
-      width: 30vh;
+  .img-girl-register {
+    display: block;
+    height: 23rem;
+    width: 26rem;
     }
-    
-    header p {
+  
+
+  .register-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo {
+    height: 8vh;
+    width: 30vh;
+  }
+
+  header p {
     font-size: 23px;
     margin-top: 15px;
-    }
-      
+  }
 
-    .section-register{
-      /* margin-top: 13.6vw; */
-      display: flex;
-      flex-direction: column;
-      /* margin-left: 8vw;
-      margin-bottom: 20px; */
-    }
+  #container-register {
+    display: flex;
+    flex-direction: row;
+  }
 
-    .new-account-register {
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
+  .new-account-register {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
 
-    input::placeholder {
-      font-size: 13px;
-  }   
+  input::placeholder {
+    font-size: 13px;
+  }
 }
 
 @media (min-width: 1920px) {
-  .img-girl-register {
-    display: block;
-  }
-
-  .section-register {
-      padding: 2.2rem 3.1rem 1.6rem;
+  .images-register {
+    margin-right: 14rem;
   }
 }

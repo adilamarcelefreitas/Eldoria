@@ -6,12 +6,13 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { Auth } from './firebaseinit.js';
+import { Auth } from './firebaseInit.js';
 
-export const createUser = (email, password, name) => createUserWithEmailAndPassword(Auth, email, password)
-  .then((userCredential) => {
+// eslint-disable-next-line max-len
+export const createUser = async (email, password, name) => createUserWithEmailAndPassword(Auth, email, password)
+  .then(async (userCredential) => {
     const user = userCredential.user;
-    return updateProfile(user, { name });
+    await updateProfile(user, { displayName: name });
   });
 
 export const login = (email, password) => signInWithEmailAndPassword(Auth, email, password);
