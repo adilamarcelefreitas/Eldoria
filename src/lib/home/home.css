@@ -430,6 +430,7 @@ textarea::placeholder {
     border: none;
     width: 9.5rem;
     height: 2vw;
+    font-size: 18px;
   }
 
   .fa-arrow-right-from-bracket,
@@ -480,7 +481,7 @@ textarea::placeholder {
     font-size: 16px;
     height: 3.3rem;
     margin-top: auto;
-    position: absolute;
+    position: fixed;
     right: 0;
     background-color: white;
     bottom: 6px;
@@ -505,8 +506,7 @@ textarea::placeholder {
   }
 
   .logout {
-    position: relative;
-    top: 40rem;
+    position: fixed;
   }
 
   .search-input-desktop::placeholder {
@@ -554,10 +554,10 @@ textarea::placeholder {
     width: 40rem;
   }
 
-  .logout {
+  /* .logout {
     position: relative;
-    top: 40rem;
-  }
+    top: 35rem;
+  } */
 }
 
 @media screen and (min-width: 1224px) {
@@ -634,7 +634,7 @@ textarea::placeholder {
   }
 
   .logout {
-    top: 40rem;
+    top: 38rem;
   }
 
   .search-input-desktop::placeholder {
@@ -656,6 +656,9 @@ textarea::placeholder {
 
   #post-content {
     width: 55rem;
+  }
+  .logout {
+    top: 50rem;
   }
 }
 
@@ -686,9 +689,5 @@ textarea::placeholder {
   .post,
   .new-post-container {
     margin-right: 20rem;
-  }
-
-  .logout {
-    top: 40rem;
   }
 }

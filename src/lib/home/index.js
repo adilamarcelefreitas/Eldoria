@@ -22,7 +22,7 @@ import sendIcon from '../../assets/send.png';
 export default async () => {
   const homeContainer = document.createElement('div');
   homeContainer.classList.add('home-container');
-  let isNewPostContainerCreated = false;
+  const isNewPostContainerCreated = false;
 
   const content = `
       <header class="header-home">
@@ -592,13 +592,17 @@ export default async () => {
     filterPosts(searchValue);
   });
 
+  const searchInputDesktop = homeContainer.querySelector('.search-input-desktop');
+  searchInputDesktop.addEventListener('input', () => {
+    const searchValue = searchInputDesktop.value.trim().toLowerCase();
+    filterPosts(searchValue);
+  });
+
   // função do like
   const likeButtons = document.querySelectorAll('.like-button');
 
   function updateLikeCount(postId, count) {
-    const likeCountElement = document.querySelector(
-      `[data-post-id="${postId}"] .like-count`
-    );
+    const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
     if (likeCountElement) {
       likeCountElement.textContent = count.toString();
     }
