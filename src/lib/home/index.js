@@ -1,6 +1,12 @@
-import firstLogoBlue from "../../assets/Logo-blue.png";
-import sendIcon from "../../assets/send.png";
-
+// import firstLogoBlue from '../../assets/Logo-blue.png';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import {
+  doc,
+  getDoc,
+  // collection,
+  // orderBy,
+  // Timestamp,
+} from 'firebase/firestore';
 import {
   newPost,
   acessPost,
@@ -8,26 +14,18 @@ import {
   deslikeCounter,
   deletePost,
   editPost,
-} from "../../firebase/firebaseStore.js";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-
-import {
-  doc,
-  getDoc,
-  collection,
-  orderBy,
-  Timestamp,
-} from "firebase/firestore";
-import { db } from "../../firebase/firebaseInit.js";
-import { async } from "regenerator-runtime";
+} from '../../firebase/firebaseStore.js';
+import { db } from '../../firebase/firebaseInit.js';
+// import { async } from 'regenerator-runtime';
+import sendIcon from '../../assets/send.png';
 
 export default async () => {
-  const homeContainer = document.createElement("div");
-  homeContainer.classList.add("home-container");
+  const homeContainer = document.createElement('div');
+  homeContainer.classList.add('home-container');
   let isNewPostContainerCreated = false;
 
   const content = `
-      <header class = "header-home">
+      <header class="header-home">
         <nav id="hamburguer" class="menu-hamburguer">
         <div id="menu-mobile">
           <i class="fa-solid fa-bars" id="menu-icon"></i>
@@ -51,7 +49,7 @@ export default async () => {
               <input type="text" class="search-input-desktop menu-text-desktop" placeholder=Pesquisar...>
               </li>
               <li class="home-page-icons"><i class="fa-solid fa-circle-user icon-user-desktop"></i></a><span class="menu-text-desktop">Perfil</span></li>
-              <li class="home-page-icons logout"><button type="button" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button><span class="menu-text-desktop">Sair</span></li>
+              <li class="home-page-icons logout"><button type="button" class="btn-logout-desktop"><i class="fa-solid fa-arrow-right-from-bracket"></i></button><span class="menu-text-desktop">Sair</span></li>
             </ul>
           </div>
         </nav>
@@ -86,59 +84,59 @@ export default async () => {
 
   homeContainer.innerHTML = content; // Insere o conteúdo HTML dentro do contêiner.
 
-  const menuIcon = homeContainer.querySelector("#menu-icon");
-  const menuItems = homeContainer.querySelector(".menu-items");
+  const menuIcon = homeContainer.querySelector('#menu-icon');
+  const menuItems = homeContainer.querySelector('.menu-items');
 
   function closeMenuOnClickOutside(event) {
     if (!menuItems.contains(event.target) && event.target !== menuIcon) {
-      //verifica se o evento de clique é no próprio menuItems ou no menuIcon
-      menuItems.classList.remove("open");
+      // verifica se o evento de clique é no próprio menuItems ou no menuIcon
+      menuItems.classList.remove('open');
     }
   }
 
   function menuShow() {
-    if (menuItems.classList.contains("open")) {
-      menuItems.classList.remove("open");
-      menuItems.style.zIndex = "0";
+    if (menuItems.classList.contains('open')) {
+      menuItems.classList.remove('open');
+      menuItems.style.zIndex = '0';
     } else {
-      menuItems.classList.add("open");
-      menuItems.style.zIndex = "1";
+      menuItems.classList.add('open');
+      menuItems.style.zIndex = '1';
 
-      document.addEventListener("click", closeMenuOnClickOutside);
+      document.addEventListener('click', closeMenuOnClickOutside);
     }
   }
 
-  menuIcon.addEventListener("click", menuShow);
+  menuIcon.addEventListener('click', menuShow);
 
   // função para o botão do modo noturno
 
   let isNightMode = true;
-  const toggleButtonOn = homeContainer.querySelector("#toggle-on");
-  const toggleButtonOff = homeContainer.querySelector("#toggle-off");
+  const toggleButtonOn = homeContainer.querySelector('#toggle-on');
+  const toggleButtonOff = homeContainer.querySelector('#toggle-off');
 
   function toggleNightMode() {
     isNightMode = !isNightMode;
     const body = document.body;
-    const postContainers = document.querySelectorAll(".post"); // Seleciona todos os containers de postagens
-    const newPostContainer = document.querySelector(".new-post-container"); // Seleciona o contêiner de nova postagem
-    const menuIcon = homeContainer.querySelector("#menu-icon"); // Seleciona o ícone do menu hamburguer
-    const menuItems = homeContainer.querySelector(".menu-items"); // Seleciona a lista de itens do menu hamburguer
+    const postContainers = document.querySelectorAll('.post'); // Seleciona todos os containers de postagens
+    const newPostContainer = document.querySelector('.new-post-container'); // Seleciona o contêiner de nova postagem
+    const menuIcon = homeContainer.querySelector('#menu-icon'); // Seleciona o ícone do menu hamburguer
+    const menuItems = homeContainer.querySelector('.menu-items'); // Seleciona a lista de itens do menu hamburguer
 
     if (body) {
-      body.classList.remove("login-background");
+      body.classList.remove('login-background');
 
       if (isNightMode) {
         // Ativar o modo noturno
-        body.classList.add("night-mode");
-        body.classList.remove("background-white");
-        toggleButtonOn.style.display = "block";
-        toggleButtonOff.style.display = "none";
+        body.classList.add('night-mode');
+        body.classList.remove('background-white');
+        toggleButtonOn.style.display = 'block';
+        toggleButtonOff.style.display = 'none';
       } else {
         // Desativar o modo noturno
-        body.classList.add("background-white");
-        body.classList.remove("night-mode");
-        toggleButtonOn.style.display = "none";
-        toggleButtonOff.style.display = "block";
+        body.classList.add('background-white');
+        body.classList.remove('night-mode');
+        toggleButtonOn.style.display = 'none';
+        toggleButtonOff.style.display = 'block';
       }
     }
 
@@ -146,101 +144,100 @@ export default async () => {
       // Adicionar classe do modo noturno aos containers de postagens
       postContainers.forEach((container) => {
         if (container) {
-          container.classList.toggle("night-mode-post", isNightMode);
+          container.classList.toggle('night-mode-post', isNightMode);
         }
       });
     }
 
     if (newPostContainer) {
       // Adicionar classe do modo noturno ao contêiner de nova postagem
-      newPostContainer.classList.toggle("night-mode-post", isNightMode);
+      newPostContainer.classList.toggle('night-mode-post', isNightMode);
     }
 
     if (menuIcon) {
       // Adicionar classe do modo noturno ao ícone do menu hamburguer
-      menuIcon.classList.toggle("night-mode-menu", isNightMode);
+      menuIcon.classList.toggle('night-mode-menu', isNightMode);
     }
 
     if (menuItems) {
       // Adicionar classe do modo noturno à lista de itens do menu hamburguer
-      menuItems.classList.toggle("night-mode-menu", isNightMode);
+      menuItems.classList.toggle('night-mode-menu', isNightMode);
     }
   }
 
   toggleNightMode();
-  toggleButtonOn.addEventListener("click", toggleNightMode);
-  toggleButtonOff.addEventListener("click", toggleNightMode);
+  toggleButtonOn.addEventListener('click', toggleNightMode);
+  toggleButtonOff.addEventListener('click', toggleNightMode);
 
-  //fim da função
+  // fim da função
 
   const auth = getAuth();
   const existingPosts = await acessPost();
   existingPosts.forEach((item) => renderPost(item));
 
-  //função render post
+  // função render post
 
   function renderPost(post, user) {
     console.log(post.timestamp);
 
-    const postFeed = homeContainer.querySelector("#post-feed");
-    const postContainer = document.createElement("div");
-    postContainer.className = "post";
+    const postFeed = homeContainer.querySelector('#post-feed');
+    const postContainer = document.createElement('div');
+    postContainer.className = 'post';
 
-    const userContainer = document.createElement("div");
-    userContainer.className = "user-container";
+    const userContainer = document.createElement('div');
+    userContainer.className = 'user-container';
 
-    const userTitle = document.createElement("div");
-    userTitle.className = "user-title";
+    const userTitle = document.createElement('div');
+    userTitle.className = 'user-title';
 
-    const postIcon = document.createElement("i");
-    postIcon.className = "fa-solid fa-circle-user";
+    const postIcon = document.createElement('i');
+    postIcon.className = 'fa-solid fa-circle-user icon-user';
 
-    const postTitle = document.createElement("h2");
+    const postTitle = document.createElement('h2');
     postTitle.textContent = `${post.userName}`;
 
-    const postContentContainer = document.createElement("div");
-    postContentContainer.className = "post-container";
+    const postContentContainer = document.createElement('div');
+    postContentContainer.className = 'post-container';
 
-    const postContent = document.createElement("p");
+    const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
-    //aqui to criando os elementos de edição e exclusão
+    // aqui to criando os elementos de edição e exclusão
     let deleteButton = '';
     if (post.idUser === auth.currentUser.uid) {
-      deleteButton = document.createElement("button");
-      deleteButton.innerHTML = `<i class="material-symbols-outlined">delete</i>`;
-      deleteButton.className = "delete-button";
-    };
+      deleteButton = document.createElement('button');
+      deleteButton.innerHTML = `<i class='material-symbols-outlined'>delete</i>`;
+      deleteButton.className = 'delete-button';
+    }
 
     console.log(post.authorId, auth.currentUser.uid);
 
-    let editButton = "";
+    let editButton = '';
 
     if (post.idUser === auth.currentUser.uid) {
-      editButton = document.createElement("button");
-      editButton.innerHTML = `<i class="fa-regular fa-pen-to-square"></i>`;
-      editButton.className = "edit-button";
+      editButton = document.createElement('button');
+      editButton.innerHTML = `<i class='fa-regular fa-pen-to-square'></i>`;
+      editButton.className = 'edit-button';
     }
-    const userActions = document.createElement("div");
-    userActions.className = "user-actions";
+    const userActions = document.createElement('div');
+    userActions.className = 'user-actions';
 
-    const likeAction = document.createElement("div");
-    likeAction.className = "like-actions like-actions-right";
+    const likeAction = document.createElement('div');
+    likeAction.className = 'like-actions like-actions-right';
 
-    const likeButton = document.createElement("button");
-    likeButton.innerHTML = `<i class="fa-solid fa-heart"></i>`;
-    likeButton.className = "like-button";
+    const likeButton = document.createElement('button');
+    likeButton.innerHTML = `<i class='fa-solid fa-heart'></i>`;
+    likeButton.className = 'like-button';
 
-    const likeCount = document.createElement("span");
-    likeCount.className = "like-count";
+    const likeCount = document.createElement('span');
+    likeCount.className = 'like-count';
     likeCount.textContent = post.likeUsers
       ? post.likeUsers.length.toString()
-      : "0";
+      : '0';
 
-    const timestampElement = document.createElement("p");
-    timestampElement.className = "post-timestamp";
+    const timestampElement = document.createElement('p');
+    timestampElement.className = 'post-timestamp';
     timestampElement.textContent = formatTimestamp(post.timestamp);
-
 
     userTitle.appendChild(postIcon);
     userTitle.appendChild(postTitle);
@@ -255,15 +252,14 @@ export default async () => {
     likeAction.appendChild(likeCount);
     likeAction.appendChild(likeButton);
     userActions.appendChild(likeAction);
-    postContainer.setAttribute("data-post-id", post.id);
+    postContainer.setAttribute('data-post-id', post.id);
     postContainer.appendChild(timestampElement);
     postFeed.appendChild(postContainer);
-    
 
-    //logica para os botões de editar e lixeira so aparecer para quem for dono do post
+    // logica para os botões de editar e lixeira so aparecer para quem for dono do post
 
-    postContainer.setAttribute("data-post-id", post.id);
-    postContainer.setAttribute("data-post-author-id", post.authorId);
+    postContainer.setAttribute('data-post-id', post.id);
+    postContainer.setAttribute('data-post-author-id', post.authorId);
 
     if (deleteButton) {
       deleteButton.addEventListener('click', () => {
@@ -282,40 +278,40 @@ export default async () => {
           }
         });
       });
-    };
+    }
 
     if (editButton) {
-      editButton.addEventListener("click", async () => {
-        likeButton.style.display = "none";
-        likeCount.style.display = "none";
+      editButton.addEventListener('click', async () => {
+        likeButton.style.display = 'none';
+        likeCount.style.display = 'none';
         // Recupera o conteúdo atual do post
-        const postId = postContainer.getAttribute("data-post-id");
-        const postContentElement = postContainer.querySelector("p"); // Obtém o elemento do conteúdo do post
+        const postId = postContainer.getAttribute('data-post-id');
+        const postContentElement = postContainer.querySelector('p'); // Obtém o elemento do conteúdo do post
         const originalContent = postContentElement.textContent;
 
-        const editForm = document.createElement("form");
-        editForm.className = "edit-form";
+        const editForm = document.createElement('form');
+        editForm.className = 'edit-form';
 
         // Cria um formulário de edição preenchido com o conteúdo atual
-        const editTextArea = document.createElement("textarea");
+        const editTextArea = document.createElement('textarea');
         editTextArea.value = originalContent; // Usa o conteúdo atual
-        editTextArea.className = "edit-textarea";
+        editTextArea.className = 'edit-textarea';
         editForm.appendChild(editTextArea);
 
         const cancelButton = document.createElement('button');
-        cancelButton.innerHTML = `<i class="fa-regular fa-circle-xmark"></i>`;
+        cancelButton.innerHTML = `<i class='fa-regular fa-circle-xmark'></i>`;
         cancelButton.className = 'cancel-button';
         editForm.appendChild(cancelButton);
 
-        const saveButton = document.createElement("button");
-        saveButton.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
-        saveButton.className = "save-button";
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = `<i class='fa-regular fa-circle-check'></i>`;
+        saveButton.className = 'save-button';
         editForm.appendChild(saveButton);
 
         postContentContainer.replaceChild(editForm, postContentElement);
 
         // Adiciona um manipulador de evento para o botão "Salvar"
-        saveButton.addEventListener("click", async (event) => {
+        saveButton.addEventListener('click', async (event) => {
           event.preventDefault();
           const newContent = editTextArea.value;
 
@@ -326,33 +322,32 @@ export default async () => {
               // Atualiza o conteúdo na interface do usuário
               postContentElement.textContent = newContent;
 
-              likeButton.style.display = "inline-block";
-              likeCount.style.display = "inline-block";
-
               postContentContainer.replaceChild(postContentElement, editForm);
             } catch (error) {
-              console.error("Erro ao editar o post", error);
-              alert("Erro ao editar o post. Tente novamente mais tarde.");
+              console.error('Erro ao editar o post', error);
+              alert('Erro ao editar o post. Tente novamente mais tarde.');
             }
           } else {
             postContentContainer.replaceChild(postContentElement, editForm);
           }
+          likeButton.style.display = 'inline-block';
+          likeCount.style.display = 'inline-block';
         });
 
-        cancelButton.addEventListener("click", (event) => {
+        cancelButton.addEventListener('click', (event) => {
           event.preventDefault();
           postContentElement.textContent = originalContent;
           postContentContainer.replaceChild(postContentElement, editForm);
 
-          likeButton.style.display = "inline-block";
-          likeCount.style.display = "inline-block";
+          likeButton.style.display = 'inline-block';
+          likeCount.style.display = 'inline-block';
         });
       });
     }
 
-    likeButton.addEventListener("click", async () => {
-      location.reload(); //temporário reload de page
-      const postId = likeButton.closest(".post").getAttribute("data-post-id");
+    likeButton.addEventListener('click', async () => {
+      location.reload(); // temporário reload de page
+      const postId = likeButton.closest('.post').getAttribute('data-post-id');
       const auth = getAuth();
       const user = auth.currentUser;
       const idUserAtual = user ? user.uid : null;
@@ -360,11 +355,11 @@ export default async () => {
       try {
         const hasLiked = await checkIfUserLiked(postId, idUserAtual);
         const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-        console.log("likeCountElement:", likeCountElement);
+        console.log('likeCountElement:', likeCountElement);
 
         if (!hasLiked) {
           await likeCounter(postId, idUserAtual);
-          console.log("Curtiu o post");
+          console.log('Curtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
             const currentCount = parseInt(likeCountElement.textContent);
@@ -373,16 +368,15 @@ export default async () => {
               likeCountElement.textContent = newCount.toString(); // Atualiza o contador de likes
             } else {
               console.error(
-                "O conteúdo do contador de curtidas não é um número válido:",
-                likeCountElement.textContent
-              );
+                'O conteúdo do contador de curtidas não é um número válido:',
+                likeCountElement.textContent);
             }
           } else {
-            console.error("Elemento do contador de curtidas não encontrado.");
+            console.error('Elemento do contador de curtidas não encontrado.');
           }
         } else {
           await deslikeCounter(postId, idUserAtual);
-          console.log("Descurtiu o post");
+          console.log('Descurtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
             const currentCount = parseInt(likeCountElement.textContent);
@@ -391,23 +385,22 @@ export default async () => {
               likeCountElement.textContent = newCount.toString(); // Atualiza o contador de likes
             } else {
               console.error(
-                "O conteúdo do contador de curtidas não é um número válido:",
-                likeCountElement.textContent
-              );
+                'O conteúdo do contador de curtidas não é um número válido:',
+                likeCountElement.textContent);
             }
           } else {
-            console.error("Elemento do contador de curtidas não encontrado.");
+            console.error('Elemento do contador de curtidas não encontrado.');
           }
         }
       } catch (error) {
-        console.error("Erro ao curtir o post", error);
-        alert("Erro ao curtir o post. Tente novamente mais tarde.");
+        console.error('Erro ao curtir o post', error);
+        alert('Erro ao curtir o post. Tente novamente mais tarde.');
       }
     });
   }
 
   const modalDelete = () => {
-    console.log("Modal está sendo criado!");
+    console.log('Modal está sendo criado!');
     const templateDelete = `
       <div id="fade" class="hide"></div>
       <div id="modal" class="hide">
@@ -418,21 +411,21 @@ export default async () => {
         </div>
       </div>  
     `;
-    const modalContainer = document.createElement("section");
-    modalContainer.classList.add("modal-container");
+    const modalContainer = document.createElement('section');
+    modalContainer.classList.add('modal-container');
     modalContainer.innerHTML = templateDelete;
     document.body.appendChild(modalContainer);
 
-    const modal = modalContainer.querySelector("#modal");
-    const fade = modalContainer.querySelector("#fade");
-    const deleteModal = modalContainer.querySelector("#delete-modal");
-    const cancelModal = modalContainer.querySelector("#cancel-modal");
+    const modal = modalContainer.querySelector('#modal');
+    const fade = modalContainer.querySelector('#fade');
+    const deleteModal = modalContainer.querySelector('#delete-modal');
+    const cancelModal = modalContainer.querySelector('#cancel-modal');
 
-    cancelModal.addEventListener("click", () => {
+    cancelModal.addEventListener('click', () => {
       modalContainer.remove();
     });
 
-    deleteModal.addEventListener("click", async () => {
+    deleteModal.addEventListener('click', async () => {
       await deletePost();
       modalContainer.remove();
     });
@@ -442,26 +435,26 @@ export default async () => {
 
   function renderPostsIfAuthenticated(userName, idUser) {
     // const newPostButton = homeContainer.querySelector(".new-post i");
-    const postFeed = homeContainer.querySelector("#post-feed");
-    const newPostContainerLocation = homeContainer.querySelector("#new-post-container");
+    const postFeed = homeContainer.querySelector('#post-feed');
+    const newPostContainerLocation = homeContainer.querySelector('#new-post-container');
 
     if (!isNewPostContainerCreated) {
-      const newPostContainer = document.createElement("div");
-      newPostContainer.className = "new-post-container";
+      const newPostContainer = document.createElement('div');
+      newPostContainer.className = 'new-post-container';
 
-      const icon = document.createElement("i");
-      icon.className = "fa-solid fa-circle-user";
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-circle-user icon-user';
 
-      const userNameElement = document.createElement("h2");
-      userNameElement.className = "username";
+      const userNameElement = document.createElement('h2');
+      userNameElement.className = 'username';
       userNameElement.textContent = `${userName}`;
 
-      const postContentDiv = document.createElement("div");
-      postContentDiv.className = "post-content-div";
+      const postContentDiv = document.createElement('div');
+      postContentDiv.className = 'post-content-div';
 
-      const postContentTextarea = document.createElement("textarea");
-      postContentTextarea.placeholder = "O que você leu hoje?";
-      postContentTextarea.id = "post-content";
+      const postContentTextarea = document.createElement('textarea');
+      postContentTextarea.placeholder = 'O que você leu hoje?';
+      postContentTextarea.id = 'post-content';
 
       // Adiciona o ícone e a <textarea> como filhos do div de conteúdo
       postContentDiv.appendChild(icon);
@@ -471,23 +464,23 @@ export default async () => {
       // Adiciona a div de conteúdo ao contêiner da postagem
       newPostContainer.appendChild(postContentDiv);
 
-      const publishButton = document.createElement("button");
+      const publishButton = document.createElement('button');
       publishButton.innerHTML = `<img src="${sendIcon}">`;
-      publishButton.id = "send-icon";
+      publishButton.id = 'send-icon';
 
-      const contentBox = document.createElement("div");
-      contentBox.className = "content-box";
+      const contentBox = document.createElement('div');
+      contentBox.className = 'content-box';
 
       contentBox.appendChild(postContentTextarea);
       contentBox.appendChild(publishButton);
       newPostContainer.appendChild(contentBox);
 
-      publishButton.addEventListener("click", async () => {
+      publishButton.addEventListener('click', async () => {
         try {
           const contentPost = postContentTextarea.value;
 
           if (!contentPost) {
-            alert("Preencha todos os campos.");
+            alert('Preencha todos os campos.');
             return;
           }
 
@@ -505,14 +498,14 @@ export default async () => {
           );
 
           renderPost(newPostData);
-          postContentTextarea.value = "";
+          postContentTextarea.value = '';
 
           // newPostContainer.appendChild(timestampElement);
 
           postFeed.insertBefore(newPostContainer, postFeed.firstChild);
         } catch (error) {
-          console.error("Erro ao criar postagem", error);
-          alert("Erro ao criar postagem. Tente novamente mais tarde.");
+          console.error('Erro ao criar postagem', error);
+          alert('Erro ao criar postagem. Tente novamente mais tarde.');
         }
       });
 
@@ -520,15 +513,20 @@ export default async () => {
     }
   }
 
-  //Função para formatar o timestamp para uma exibição
+  // Função para formatar o timestamp para uma exibição
   function formatTimestamp(timestamp) {
     // console.log(timestamp.toLocaleDateString(),'OKKKKKKKKKKKKKKK');
-    const options = { month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" };
+    const options = {
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    };
     return new Date(timestamp * 1000).toLocaleDateString('pt-BR', options);
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    renderPostsIfAuthenticated(userName, idUser);
+  document.addEventListener('DOMContentLoaded', () => {
+    renderPostsIfAuthenticated();
   });
 
   onAuthStateChanged(auth, async (user) => {
@@ -540,61 +538,67 @@ export default async () => {
         const existingPosts = await acessPost();
         renderPost(existingPosts);
       } catch (error) {
-        console.error("Erro ao buscar posts", error);
+        console.error('Erro ao buscar posts', error);
       }
       renderPostsIfAuthenticated(username, userId);
     } else {
     }
   });
-  
+
   // Função para fazer logout
   function logout() {
-    console.log("Botão de sair clicado no menu desktop");
+    console.log('Botão de sair clicado no menu desktop');
 
     signOut(auth)
       .then(() => {
-        window.location = "/";
+        window.location = '/';
       })
       .catch((error) => {
-        console.error("Erro ao fazer logout", error);
-        alert("Erro ao fazer logout. Tente novamente mais tarde");
+        console.error('Erro ao fazer logout', error);
+        alert('Erro ao fazer logout. Tente novamente mais tarde');
       });
   }
 
   // Evento de clique no botão "sair"
-  const logoutButton = homeContainer.querySelector(".btn-logout");
-  logoutButton.addEventListener("click", logout);
+  const logoutButton = homeContainer.querySelector('.btn-logout');
+  logoutButton.addEventListener('click', logout);
+
+  const logoutButtonDesktop = homeContainer.querySelector(
+    '.btn-logout-desktop');
+  logoutButtonDesktop.addEventListener('click', logout);
 
   // função de busca
   function filterPosts(searchValue) {
-    const postFeed = homeContainer.querySelector("#post-feed");
-    const posts = postFeed.querySelectorAll(".post");
+    const postFeed = homeContainer.querySelector('#post-feed');
+    const posts = postFeed.querySelectorAll('.post');
 
     posts.forEach((post) => {
-      const postContent = post.querySelector("p").textContent.toLowerCase();
-      const postTitle = post.querySelector("h2").textContent.toLowerCase();
+      const postContent = post.querySelector('p').textContent.toLowerCase();
+      const postTitle = post.querySelector('h2').textContent.toLowerCase();
       if (
         postContent.includes(searchValue) ||
         postTitle.includes(searchValue)
       ) {
-        post.style.display = "block";
+        post.style.display = 'block';
       } else {
-        post.style.display = "none";
+        post.style.display = 'none';
       }
     });
   }
 
-  const searchInput = homeContainer.querySelector(".search-input");
-  searchInput.addEventListener("input", () => {
+  const searchInput = homeContainer.querySelector('.search-input');
+  searchInput.addEventListener('input', () => {
     const searchValue = searchInput.value.trim().toLowerCase();
     filterPosts(searchValue);
   });
 
   // função do like
-  const likeButtons = document.querySelectorAll(".like-button");
+  const likeButtons = document.querySelectorAll('.like-button');
 
   function updateLikeCount(postId, count) {
-    const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+    const likeCountElement = document.querySelector(
+      `[data-post-id="${postId}"] .like-count`
+    );
     if (likeCountElement) {
       likeCountElement.textContent = count.toString();
     }
@@ -602,41 +606,37 @@ export default async () => {
 
   // Função para lidar com o clique no botão "Curtir"
   async function handleLikeButtonClick(likeButton) {
-    const postId = likeButton.closest(".post").getAttribute("data-post-id");
+    const postId = likeButton.closest('.post').getAttribute('data-post-id');
     const currentUserDisplayName = Auth.currentUser.displayName;
     const likeCountElement = likeButton
-      .closest(".post")
-      .querySelector(".like-count");
+      .closest('.post')
+      .querySelector('.like-count');
 
     try {
-      const hasLiked = await checkIfUserLiked(postId, "idUserAtual");
+      const hasLiked = await checkIfUserLiked(postId, 'idUserAtual');
 
       if (!hasLiked) {
-        await likeCounter(postId, "idUserAtual");
+        await likeCounter(postId, 'idUserAtual');
 
-        const currentCount = parseInt(
-          likeButton.nextElementSibling.textContent
-        );
+        const currentCount = parseInt(likeButton.nextElementSibling.textContent);
         const newCount = currentCount + 1;
         likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
       } else {
-        await deslikeCounter(postId, "idUserAtual");
+        await deslikeCounter(postId, 'idUserAtual');
 
-        const currentCount = parseInt(
-          likeButton.nextElementSibling.textContent
-        );
+        const currentCount = parseInt(likeButton.nextElementSibling.textContent);
         const newCount = currentCount - 1;
         likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
       }
     } catch (error) {
-      console.error("Erro ao curtir o post", error);
-      alert("Erro ao curtir o post. Tente novamente mais tarde.");
+      console.error('Erro ao curtir o post', error);
+      alert('Erro ao curtir o post. Tente novamente mais tarde.');
     }
   }
 
   async function checkIfUserLiked(postId, userId) {
     try {
-      const postRef = doc(db, "posts", postId);
+      const postRef = doc(db, 'posts', postId);
       const postSnapshot = await getDoc(postRef);
 
       if (postSnapshot.exists()) {
@@ -649,34 +649,34 @@ export default async () => {
 
       return false;
     } catch (error) {
-      console.error("Erro ao verificar se o usuário curtiu o post:", error);
+      console.error('Erro ao verificar se o usuário curtiu o post:', error);
       throw error;
     }
   }
 
   // Função para mostrar/ocultar o botão de scroll
   function toggleScrollToTopButton() {
-    const scrollToTopButton = document.querySelector(".footer-home");
-  
+    const scrollToTopButton = document.querySelector('.footer-home');
+
     if (scrollToTopButton) {
       if (window.scrollY > 100) {
-        scrollToTopButton.style.display = "block";
+        scrollToTopButton.style.display = 'block';
       } else {
-        scrollToTopButton.style.display = "none";
+        scrollToTopButton.style.display = 'none';
       }
     } else {
-      console.error("Erro");
+      console.error('Erro');
     }
   }
 
   // Adiciona um ouvinte de evento de rolagem para chamar a função
-  window.addEventListener("scroll", toggleScrollToTopButton);
+  window.addEventListener('scroll', toggleScrollToTopButton);
 
   // Adiciona um ouvinte de evento de clique para rolar para o topo
-  const scrollToTop = homeContainer.querySelector("#scrollToTop");
+  const scrollToTop = homeContainer.querySelector('#scrollToTop');
   if (scrollToTop) {
-    scrollToTop.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
