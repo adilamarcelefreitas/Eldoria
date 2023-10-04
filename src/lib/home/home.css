@@ -219,10 +219,6 @@ picture {
   margin-right: 3px;
 }
 
-.like-button:hover {
-  color: #f05656;
-}
-
 .fa-heart,
 .fa-pen-to-square,
 .fa-circle-xmark,
@@ -237,6 +233,10 @@ picture {
 .cancel-button {
   border: none;
   background-color: transparent;
+}
+
+.like-button:hover {
+  color: #f05656;
 }
 
 textarea:focus,
@@ -314,7 +314,7 @@ textarea::placeholder {
   color: white;
 }
 
-.night-mode .menu-items {
+.night-mode .menu-items, .night-mode .menu-desktop {
   background-color: #494949;
   border: 1px solid #a6a6a6;
   color: white;
@@ -484,7 +484,7 @@ textarea::placeholder {
     position: fixed;
     right: 0;
     background-color: white;
-    bottom: 6px;
+    bottom: 0;
     width: 85%;
     z-index: 2;
     left: 15%;
@@ -507,6 +507,7 @@ textarea::placeholder {
 
   .logout {
     position: fixed;
+    top: 32rem;
   }
 
   .search-input-desktop::placeholder {
@@ -553,11 +554,6 @@ textarea::placeholder {
   .post p {
     width: 40rem;
   }
-
-  /* .logout {
-    position: relative;
-    top: 35rem;
-  } */
 }
 
 @media screen and (min-width: 1224px) {
@@ -630,7 +626,6 @@ textarea::placeholder {
 
   .footer-info {
     font-size: 18px;
-    bottom: 6px;
   }
 
   .logout {

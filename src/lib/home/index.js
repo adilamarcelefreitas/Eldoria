@@ -1,12 +1,6 @@
-// import firstLogoBlue from '../../assets/Logo-blue.png';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  // collection,
-  // orderBy,
-  // Timestamp,
-} from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+// import { async } from 'regenerator-runtime';
 import {
   newPost,
   acessPost,
@@ -16,8 +10,8 @@ import {
   editPost,
 } from '../../firebase/firebaseStore.js';
 import { db } from '../../firebase/firebaseInit.js';
-// import { async } from 'regenerator-runtime';
 import sendIcon from '../../assets/send.png';
+import firstLogoBlue from '../../assets/Logo-blue.png';
 
 export default async () => {
   const homeContainer = document.createElement('div');
@@ -40,7 +34,7 @@ export default async () => {
            <nav>
           <div id="menu-desktop">
             <picture>
-              <img src="../../assets/Logo-blue.png" id="logo-blue-dektop">
+              <img src="${firstLogoBlue}" id="logo-blue-dektop">
             </picture>
             <ul class="menu-items-desktop">
               <li class="home-page-icons"><a href=""><i class="fa-solid fa-house"></i></a><span class="menu-text-desktop">Página inicial</span></li>
@@ -82,14 +76,13 @@ export default async () => {
       </footer>
     `;
 
-  homeContainer.innerHTML = content; // Insere o conteúdo HTML dentro do contêiner.
+  homeContainer.innerHTML = content;
 
   const menuIcon = homeContainer.querySelector('#menu-icon');
   const menuItems = homeContainer.querySelector('.menu-items');
 
   function closeMenuOnClickOutside(event) {
     if (!menuItems.contains(event.target) && event.target !== menuIcon) {
-      // verifica se o evento de clique é no próprio menuItems ou no menuIcon
       menuItems.classList.remove('open');
     }
   }
@@ -119,9 +112,8 @@ export default async () => {
     const body = document.body;
     const postContainers = document.querySelectorAll('.post'); // Seleciona todos os containers de postagens
     const newPostContainer = document.querySelector('.new-post-container'); // Seleciona o contêiner de nova postagem
-    const menuIcon = homeContainer.querySelector('#menu-icon'); // Seleciona o ícone do menu hamburguer
-    const menuItems = homeContainer.querySelector('.menu-items'); // Seleciona a lista de itens do menu hamburguer
-
+    const menuIconMobile = homeContainer.querySelector('#menu-icon'); // Seleciona o ícone do menu hamburguer
+    const menuItemsMobile = homeContainer.querySelector('.menu-items'); // Seleciona a lista de itens do menu hamburguer
     if (body) {
       body.classList.remove('login-background');
 
@@ -141,7 +133,7 @@ export default async () => {
     }
 
     if (postContainers) {
-      // Adicionar classe do modo noturno aos containers de postagens
+      // Adiciona classe do modo noturno aos containers de postagens
       postContainers.forEach((container) => {
         if (container) {
           container.classList.toggle('night-mode-post', isNightMode);
@@ -150,18 +142,18 @@ export default async () => {
     }
 
     if (newPostContainer) {
-      // Adicionar classe do modo noturno ao contêiner de nova postagem
+      // Adiciona classe do modo noturno ao contêiner de nova postagem
       newPostContainer.classList.toggle('night-mode-post', isNightMode);
     }
 
-    if (menuIcon) {
-      // Adicionar classe do modo noturno ao ícone do menu hamburguer
-      menuIcon.classList.toggle('night-mode-menu', isNightMode);
+    if (menuIconMobile) {
+      // Adiciona classe do modo noturno ao ícone do menu hamburguer
+      menuIconMobile.classList.toggle('night-mode-menu', isNightMode);
     }
 
-    if (menuItems) {
-      // Adicionar classe do modo noturno à lista de itens do menu hamburguer
-      menuItems.classList.toggle('night-mode-menu', isNightMode);
+    if (menuItemsMobile) {
+      // Adiciona classe do modo noturno à lista de itens do menu hamburguer
+      menuItemsMobile.classList.toggle('night-mode-menu', isNightMode);
     }
   }
 
@@ -169,15 +161,75 @@ export default async () => {
   toggleButtonOn.addEventListener('click', toggleNightMode);
   toggleButtonOff.addEventListener('click', toggleNightMode);
 
-  // fim da função
-
   const auth = getAuth();
   const existingPosts = await acessPost();
-  existingPosts.forEach((item) => renderPost(item));
 
-  // função render post
+  // Função para formatar o timestamp para uma exibição
+  function formatTimestamp(timestamp) {
+    // console.log(timestamp.toLocaleDateString(),'OKKKKKKKKKKKKKKK');
+    const options = {
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    };
+    return new Date(timestamp * 1000).toLocaleDateString('pt-BR', options);
+  }
 
-  function renderPost(post, user) {
+  async function checkIfUserLiked(postId, userId) {
+    try {
+      const postRef = doc(db, 'posts', postId);
+      const postSnapshot = await getDoc(postRef);
+
+      if (postSnapshot.exists()) {
+        const postData = postSnapshot.data();
+
+        if (postData.likeUsers && postData.likeUsers.includes(userId)) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Erro ao verificar se o usuário curtiu o post:', error);
+      throw error;
+    }
+  }
+
+  const modalDelete = () => {
+    const templateDelete = `
+      <div id="fade" class="hide"></div>
+      <div id="modal" class="hide">
+        <p class="message-delete">Tem certeza que deseja excluir a publicação?</p> 
+        <div class="button-modal">
+         <button id="cancel-modal">Cancelar</button>
+          <button id="delete-modal">Excluir</button>
+        </div>
+      </div>  
+    `;
+    const modalContainer = document.createElement('section');
+    modalContainer.classList.add('modal-container');
+    modalContainer.innerHTML = templateDelete;
+    document.body.appendChild(modalContainer);
+
+    const modal = modalContainer.querySelector('#modal');
+    const fade = modalContainer.querySelector('#fade');
+    const deleteModal = modalContainer.querySelector('#delete-modal');
+    const cancelModal = modalContainer.querySelector('#cancel-modal');
+
+    cancelModal.addEventListener('click', () => {
+      modalContainer.remove();
+    });
+
+    deleteModal.addEventListener('click', async () => {
+      await deletePost();
+      modalContainer.remove();
+    });
+
+    return { fade, modal, deleteModal };
+  };
+
+  function renderPost(post) {
     console.log(post.timestamp);
 
     const postFeed = homeContainer.querySelector('#post-feed');
@@ -206,17 +258,17 @@ export default async () => {
     let deleteButton = '';
     if (post.idUser === auth.currentUser.uid) {
       deleteButton = document.createElement('button');
-      deleteButton.innerHTML = `<i class='material-symbols-outlined'>delete</i>`;
+      deleteButton.innerHTML = '<i class=\'material-symbols-outlined\'>delete</i>';
       deleteButton.className = 'delete-button';
     }
 
-    console.log(post.authorId, auth.currentUser.uid);
+    // console.log(post.authorId, auth.currentUser.uid);
 
     let editButton = '';
 
     if (post.idUser === auth.currentUser.uid) {
       editButton = document.createElement('button');
-      editButton.innerHTML = `<i class='fa-regular fa-pen-to-square'></i>`;
+      editButton.innerHTML = '<i class=\'fa-regular fa-pen-to-square\'></i>';
       editButton.className = 'edit-button';
     }
     const userActions = document.createElement('div');
@@ -226,7 +278,7 @@ export default async () => {
     likeAction.className = 'like-actions like-actions-right';
 
     const likeButton = document.createElement('button');
-    likeButton.innerHTML = `<i class='fa-solid fa-heart'></i>`;
+    likeButton.innerHTML = '<i class=\'fa-solid fa-heart\'></i>';
     likeButton.className = 'like-button';
 
     const likeCount = document.createElement('span');
@@ -256,14 +308,13 @@ export default async () => {
     postContainer.appendChild(timestampElement);
     postFeed.appendChild(postContainer);
 
-    // logica para os botões de editar e lixeira so aparecer para quem for dono do post
+    // lógica para os botões de editar e lixeira so aparecer para quem for dono do post
 
     postContainer.setAttribute('data-post-id', post.id);
     postContainer.setAttribute('data-post-author-id', post.authorId);
 
     if (deleteButton) {
       deleteButton.addEventListener('click', () => {
-        console.log('Clique no botão de exclusão!');
         const { fade, modal, deleteModal } = modalDelete();
 
         deleteModal.addEventListener('click', async () => {
@@ -299,12 +350,12 @@ export default async () => {
         editForm.appendChild(editTextArea);
 
         const cancelButton = document.createElement('button');
-        cancelButton.innerHTML = `<i class='fa-regular fa-circle-xmark'></i>`;
+        cancelButton.innerHTML = '<i class=\'fa-regular fa-circle-xmark\'></i>';
         cancelButton.className = 'cancel-button';
         editForm.appendChild(cancelButton);
 
         const saveButton = document.createElement('button');
-        saveButton.innerHTML = `<i class='fa-regular fa-circle-check'></i>`;
+        saveButton.innerHTML = '<i class=\'fa-regular fa-circle-check\'></i>';
         saveButton.className = 'save-button';
         editForm.appendChild(saveButton);
 
@@ -346,30 +397,28 @@ export default async () => {
     }
 
     likeButton.addEventListener('click', async () => {
-      location.reload(); // temporário reload de page
+      window.location.reload(); // temporário reload de page
       const postId = likeButton.closest('.post').getAttribute('data-post-id');
-      const auth = getAuth();
       const user = auth.currentUser;
       const idUserAtual = user ? user.uid : null;
 
       try {
         const hasLiked = await checkIfUserLiked(postId, idUserAtual);
-        const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-        console.log('likeCountElement:', likeCountElement);
 
         if (!hasLiked) {
           await likeCounter(postId, idUserAtual);
-          console.log('Curtiu o post');
+          // console.log('Curtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
-            const currentCount = parseInt(likeCountElement.textContent);
-            if (!isNaN(currentCount)) {
+            const currentCount = parseInt(likeCountElement.textContent, 10);
+            if (!Number.isNaN(currentCount)) {
               const newCount = currentCount + 1;
               likeCountElement.textContent = newCount.toString(); // Atualiza o contador de likes
             } else {
               console.error(
                 'O conteúdo do contador de curtidas não é um número válido:',
-                likeCountElement.textContent);
+                likeCountElement.textContent,
+              );
             }
           } else {
             console.error('Elemento do contador de curtidas não encontrado.');
@@ -379,14 +428,15 @@ export default async () => {
           console.log('Descurtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
-            const currentCount = parseInt(likeCountElement.textContent);
-            if (!isNaN(currentCount)) {
+            const currentCount = parseInt(likeCountElement.textContent, 10);
+            if (!Number.isNaN(currentCount)) {
               const newCount = currentCount - 1;
               likeCountElement.textContent = newCount.toString(); // Atualiza o contador de likes
             } else {
               console.error(
                 'O conteúdo do contador de curtidas não é um número válido:',
-                likeCountElement.textContent);
+                likeCountElement.textContent,
+              );
             }
           } else {
             console.error('Elemento do contador de curtidas não encontrado.');
@@ -399,39 +449,7 @@ export default async () => {
     });
   }
 
-  const modalDelete = () => {
-    console.log('Modal está sendo criado!');
-    const templateDelete = `
-      <div id="fade" class="hide"></div>
-      <div id="modal" class="hide">
-        <p class="message-delete">Tem certeza que deseja excluir a publicação?</p> 
-        <div class="button-modal">
-         <button id="cancel-modal">Cancelar</button>
-          <button id="delete-modal">Excluir</button>
-        </div>
-      </div>  
-    `;
-    const modalContainer = document.createElement('section');
-    modalContainer.classList.add('modal-container');
-    modalContainer.innerHTML = templateDelete;
-    document.body.appendChild(modalContainer);
-
-    const modal = modalContainer.querySelector('#modal');
-    const fade = modalContainer.querySelector('#fade');
-    const deleteModal = modalContainer.querySelector('#delete-modal');
-    const cancelModal = modalContainer.querySelector('#cancel-modal');
-
-    cancelModal.addEventListener('click', () => {
-      modalContainer.remove();
-    });
-
-    deleteModal.addEventListener('click', async () => {
-      await deletePost();
-      modalContainer.remove();
-    });
-
-    return { fade, modal, deleteModal };
-  };
+  existingPosts.forEach((item) => renderPost(item));
 
   function renderPostsIfAuthenticated(userName, idUser) {
     // const newPostButton = homeContainer.querySelector(".new-post i");
@@ -465,7 +483,7 @@ export default async () => {
       newPostContainer.appendChild(postContentDiv);
 
       const publishButton = document.createElement('button');
-      publishButton.innerHTML = `<img src="${sendIcon}">`;
+      publishButton.innerHTML = `<img src='${sendIcon}'>`;
       publishButton.id = 'send-icon';
 
       const contentBox = document.createElement('div');
@@ -513,18 +531,6 @@ export default async () => {
     }
   }
 
-  // Função para formatar o timestamp para uma exibição
-  function formatTimestamp(timestamp) {
-    // console.log(timestamp.toLocaleDateString(),'OKKKKKKKKKKKKKKK');
-    const options = {
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    };
-    return new Date(timestamp * 1000).toLocaleDateString('pt-BR', options);
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     renderPostsIfAuthenticated();
   });
@@ -535,13 +541,12 @@ export default async () => {
       const userId = user.uid;
 
       try {
-        const existingPosts = await acessPost();
-        renderPost(existingPosts);
+        const posts = await acessPost();
+        renderPost(posts);
       } catch (error) {
         console.error('Erro ao buscar posts', error);
       }
       renderPostsIfAuthenticated(username, userId);
-    } else {
     }
   });
 
@@ -559,12 +564,10 @@ export default async () => {
       });
   }
 
-  // Evento de clique no botão "sair"
   const logoutButton = homeContainer.querySelector('.btn-logout');
   logoutButton.addEventListener('click', logout);
 
-  const logoutButtonDesktop = homeContainer.querySelector(
-    '.btn-logout-desktop');
+  const logoutButtonDesktop = homeContainer.querySelector('.btn-logout-desktop');
   logoutButtonDesktop.addEventListener('click', logout);
 
   // função de busca
@@ -575,10 +578,7 @@ export default async () => {
     posts.forEach((post) => {
       const postContent = post.querySelector('p').textContent.toLowerCase();
       const postTitle = post.querySelector('h2').textContent.toLowerCase();
-      if (
-        postContent.includes(searchValue) ||
-        postTitle.includes(searchValue)
-      ) {
+      if (postContent.includes(searchValue) || postTitle.includes(searchValue)) {
         post.style.display = 'block';
       } else {
         post.style.display = 'none';
@@ -598,66 +598,6 @@ export default async () => {
     filterPosts(searchValue);
   });
 
-  // função do like
-  const likeButtons = document.querySelectorAll('.like-button');
-
-  function updateLikeCount(postId, count) {
-    const likeCountElement = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-    if (likeCountElement) {
-      likeCountElement.textContent = count.toString();
-    }
-  }
-
-  // Função para lidar com o clique no botão "Curtir"
-  async function handleLikeButtonClick(likeButton) {
-    const postId = likeButton.closest('.post').getAttribute('data-post-id');
-    const currentUserDisplayName = Auth.currentUser.displayName;
-    const likeCountElement = likeButton
-      .closest('.post')
-      .querySelector('.like-count');
-
-    try {
-      const hasLiked = await checkIfUserLiked(postId, 'idUserAtual');
-
-      if (!hasLiked) {
-        await likeCounter(postId, 'idUserAtual');
-
-        const currentCount = parseInt(likeButton.nextElementSibling.textContent);
-        const newCount = currentCount + 1;
-        likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
-      } else {
-        await deslikeCounter(postId, 'idUserAtual');
-
-        const currentCount = parseInt(likeButton.nextElementSibling.textContent);
-        const newCount = currentCount - 1;
-        likeButton.nextElementSibling.textContent = newCount; // Atualiza a contagem no DOM
-      }
-    } catch (error) {
-      console.error('Erro ao curtir o post', error);
-      alert('Erro ao curtir o post. Tente novamente mais tarde.');
-    }
-  }
-
-  async function checkIfUserLiked(postId, userId) {
-    try {
-      const postRef = doc(db, 'posts', postId);
-      const postSnapshot = await getDoc(postRef);
-
-      if (postSnapshot.exists()) {
-        const postData = postSnapshot.data();
-
-        if (postData.likeUsers && postData.likeUsers.includes(userId)) {
-          return true;
-        }
-      }
-
-      return false;
-    } catch (error) {
-      console.error('Erro ao verificar se o usuário curtiu o post:', error);
-      throw error;
-    }
-  }
-
   // Função para mostrar/ocultar o botão de scroll
   function toggleScrollToTopButton() {
     const scrollToTopButton = document.querySelector('.footer-home');
@@ -673,10 +613,8 @@ export default async () => {
     }
   }
 
-  // Adiciona um ouvinte de evento de rolagem para chamar a função
   window.addEventListener('scroll', toggleScrollToTopButton);
 
-  // Adiciona um ouvinte de evento de clique para rolar para o topo
   const scrollToTop = homeContainer.querySelector('#scrollToTop');
   if (scrollToTop) {
     scrollToTop.addEventListener('click', () => {

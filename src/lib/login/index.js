@@ -1,15 +1,15 @@
-import firstLogo from "../../assets/Logo-White.png"; // Importa a primeira imagem do logo.
-import girl from "../../assets/Composition-Background1.png"; // Importa a imagem de fundo com uma garota.
-import googleIcon from "../../assets/Google-Logo.png"; // Importa o ícone do Google.
-import { login, googleLogin } from "../../firebase/firebaseAuth.js";
+import firstLogo from '../../assets/Logo-White.png';
+import girl from '../../assets/Composition-Background1.png';
+import googleIcon from '../../assets/Google-Logo.png';
+import { login, googleLogin } from '../../firebase/firebaseAuth.js';
 
 export default () => {
-  document.body.classList.remove("night-mode");
-  document.body.classList.remove("background-white");
-  document.body.classList.add("login-background");
+  document.body.classList.remove('night-mode');
+  document.body.classList.remove('background-white');
+  document.body.classList.add('login-background');
 
-  const loginContainer = document.createElement("div"); // Cria um elemento div para o contêiner de login.
-  loginContainer.classList.add("login-container"); // Adiciona a classe "login-container" ao elemento.
+  const loginContainer = document.createElement('div'); // Cria um elemento div para o contêiner de login.
+  loginContainer.classList.add('login-container'); // Adiciona a classe "login-container" ao elemento.
 
   const content = `
       <main id="container-login">
@@ -39,41 +39,41 @@ export default () => {
 
   loginContainer.innerHTML = content; // Insere o conteúdo HTML dentro do contêiner.
 
-  const buttonRegister = loginContainer.querySelector("#btn-register"); // Seleciona o botão de registro.
-  buttonRegister.addEventListener("click", () => {
-    window.location.hash = "#register"; // Redireciona para a âncora "#register" ao clicar.
+  const buttonRegister = loginContainer.querySelector('#btn-register'); // Seleciona o botão de registro.
+  buttonRegister.addEventListener('click', () => {
+    window.location.hash = '#register'; // Redireciona para a âncora "#register" ao clicar.
   });
 
-  const buttonLogin = loginContainer.querySelector("#button-login"); // Seleciona o botão de login.
-  buttonLogin.addEventListener("click", () => {
-    const email = loginContainer.querySelector("#email-login"); // Captura o campo de e-mail.
-    const password = loginContainer.querySelector("#key-login");
+  const buttonLogin = loginContainer.querySelector('#button-login'); // Seleciona o botão de login.
+  buttonLogin.addEventListener('click', () => {
+    const email = loginContainer.querySelector('#email-login'); // Captura o campo de e-mail.
+    const password = loginContainer.querySelector('#key-login');
     // window.location.hash = "#home"; // Redireciona para a âncora "#Home" em caso de sucesso.
 
     login(email.value, password.value)
       .then(() => {
-        window.location.hash = "#home"; // Redireciona para a âncora "#Home" em caso de sucesso.
+        window.location.hash = '#home'; // Redireciona para a âncora "#Home" em caso de sucesso.
       })
       .catch((error) => {
-        if (error.message === "Firebase: Error (auth/user-not-found).") {
-          alert("User not found"); // Exibe um alerta se o usuário não for encontrado.
-        } else if (error.message === "Firebase: Error (auth/wrong-password)") {
-          alert("Password not found"); // Exibe um alerta se a senha estiver incorreta.
+        if (error.message === 'Firebase: Error (auth/user-not-found).') {
+          alert('User not found'); // Exibe um alerta se o usuário não for encontrado.
+        } else if (error.message === 'Firebase: Error (auth/wrong-password)') {
+          alert('Password not found'); // Exibe um alerta se a senha estiver incorreta.
         }
         console.error(error);
       });
   });
 
-  const googleButton = loginContainer.querySelector(".button-google");
-  googleButton.addEventListener("click", () => {
+  const googleButton = loginContainer.querySelector('.button-google');
+  googleButton.addEventListener('click', () => {
     // alert("botão google ok");
     googleLogin()
       .then(() => {
-        window.location.hash = "#home";
+        window.location.hash = '#home';
       })
       // eslint-disable-next-line no-unused-vars
       .catch((error) => {
-        alert("Erro ao efetuar login com o Google!");
+        alert('Erro ao efetuar login com o Google!');
         console.error(error);
       });
   });
