@@ -1,8 +1,8 @@
 // Este es el punto de entrada de tu aplicacion
 
 import login from './lib/login/index.js';
-// import home from './lib/home/index.js';
-// import password from './lib/password/index.js';
+import home from './lib/home/index.js';
+import password from './lib/password/index.js';
 import register from './lib/register/index.js';
 
 // import { myFunction } from './lib/index.js';
@@ -15,16 +15,16 @@ const init = () => {
   window.addEventListener('hashchange', () => {
     main.innerHTML = '';
     switch (window.location.hash) {
-      case '/':
+      case '':
         main.appendChild(login());
         break;
-      case '#Password':
+      case '#password':
         main.appendChild(password());
         break;
-      case '#Register':
+      case '#register':
         main.appendChild(register());
         break;
-      case '#Home':
+      case '#home':
         main.appendChild(home());
         break;
       default:
