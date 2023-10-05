@@ -1,6 +1,5 @@
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-// import { async } from 'regenerator-runtime';
 import {
   newPost,
   acessPost,
@@ -50,7 +49,7 @@ export default async () => {
       </header>
       <main id="main">
         <picture>
-          <img src="../../assets/Logo-blue.png" id="logo-blue">
+          <img src="${firstLogoBlue}" id="logo-blue">
         </picture>
         <div class="search-container">
         <section class="section-search">
@@ -165,16 +164,16 @@ export default async () => {
   const existingPosts = await acessPost();
 
   // Função para formatar o timestamp para uma exibição
-  function formatTimestamp(timestamp) {
-    // console.log(timestamp.toLocaleDateString(),'OKKKKKKKKKKKKKKK');
-    const options = {
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    };
-    return new Date(timestamp * 1000).toLocaleDateString('pt-BR', options);
-  }
+  // function formatTimestamp(timestamp) {
+  //   console.log(timestamp.toLocaleDateString(),'OKKKKKKKKKKKKKKK');
+  //   const options = {
+  //     month: 'numeric',
+  //     day: 'numeric',
+  //     hour: 'numeric',
+  //     minute: 'numeric',
+  //   };
+  //   return new Date(timestamp * 1000).toLocaleDateString('pt-BR', options);
+  // }
 
   async function checkIfUserLiked(postId, userId) {
     try {
@@ -254,15 +253,13 @@ export default async () => {
     const postContent = document.createElement('p');
     postContent.textContent = post.post;
 
-    // aqui to criando os elementos de edição e exclusão
+    // Cria os elementos de edição e exclusão
     let deleteButton = '';
     if (post.idUser === auth.currentUser.uid) {
       deleteButton = document.createElement('button');
       deleteButton.innerHTML = '<i class=\'material-symbols-outlined\'>delete</i>';
       deleteButton.className = 'delete-button';
     }
-
-    // console.log(post.authorId, auth.currentUser.uid);
 
     let editButton = '';
 
@@ -287,9 +284,9 @@ export default async () => {
       ? post.likeUsers.length.toString()
       : '0';
 
-    const timestampElement = document.createElement('p');
-    timestampElement.className = 'post-timestamp';
-    timestampElement.textContent = formatTimestamp(post.timestamp);
+    // const timestampElement = document.createElement('p');
+    // timestampElement.className = 'post-timestamp';
+    // timestampElement.textContent = formatTimestamp(post.timestamp);
 
     userTitle.appendChild(postIcon);
     userTitle.appendChild(postTitle);
@@ -305,7 +302,7 @@ export default async () => {
     likeAction.appendChild(likeButton);
     userActions.appendChild(likeAction);
     postContainer.setAttribute('data-post-id', post.id);
-    postContainer.appendChild(timestampElement);
+    // postContainer.appendChild(timestampElement);
     postFeed.appendChild(postContainer);
 
     // lógica para os botões de editar e lixeira so aparecer para quem for dono do post
@@ -407,7 +404,6 @@ export default async () => {
 
         if (!hasLiked) {
           await likeCounter(postId, idUserAtual);
-          // console.log('Curtiu o post');
           const likeCountElement = likeButton.nextElementSibling;
           if (likeCountElement) {
             const currentCount = parseInt(likeCountElement.textContent, 10);
