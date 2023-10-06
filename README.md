@@ -23,7 +23,7 @@
 ***
 ## 1. Prefácio 📌
 
-O projeto em questão é uma aplicação web mobile first criada como parte do Bootcamp da Laboratoria, com o principal objetivo de desenvolver uma rede social na qual o usuário possa se cadastrar e fazer login utilizando o e-mail e senha cadastrados, ou, se preferir, usando a conta do Google. Além disso, o usuário poderá publicar na timeline, editar ou excluir suas publicações, e também visualizar as publicações de outros usuários e interagir curtindo essas publicações.
+O projeto é uma aplicação web SPA (Single Page Application) em mobile first criada como parte do Bootcamp da Laboratoria, com o principal objetivo de desenvolver uma rede social na qual o usuário possa se cadastrar e fazer login utilizando o e-mail e senha cadastrados, ou, se preferir, usando a conta do Google. Além disso, o usuário poderá publicar na timeline, editar ou excluir suas publicações, e também visualizar as publicações de outros usuários e interagir curtindo essas publicações.
 
 ## 2. Resumo do projeto ✏️
 Dentre várias possibilidades de temas, decidimos criar uma rede social para leitores do gênero de fantasia, permitindo que compartilhem indicações sobre leitura, livros e atualizações sobre os livros que estão lendo no momento, bem como suas impressões e tudo relacionado ao universo da leitura. A rede social Eldoria possibilita aos usuários compartilharem informações relevantes sobre o universo da leitura, além de interagir com outros usuários curtindo suas publicações.
