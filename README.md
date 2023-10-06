@@ -5,7 +5,7 @@
 * [1. Prefácio](#1-prefácio)
 * [2. Resumo do projeto](#2-resumo-do-projeto)
 * [3. Sobre o tema e usuários](#3-sobre-o-tema-e-usuários)
-* [4. Protótipo](#4-protótipo)
+* [4. Protótipos](#4-protótipos)
 * [5. Testes de usabilidade](#5-testes-de-usabilidade)
 * [6. Interface do projeto e objetivos alcançados](#6-interface-do-projeto-e-objetivos-alcançados)
 * [7. Testes unitários](#7-testes-unitários)
@@ -118,12 +118,12 @@ O protótipo foi desenvolvido levando em consideração as necessidades dos usu�
 
 **Desktop**
 <p align="center">
-<img src="./src/assets/login-desktop.jpg" alt="Página de login - Desktop" width="490"/>
+<img src="./src/assets/login-desktop.jpg" alt="Página de login - Desktop" width="400"/>
 </p>
 
 <p align="center">
-<img src="./src/assets/timeline-desktop.png" alt="Timeline - Desktop"  width="490"/> 
-<img src="./src/assets/timeline-desktop-dark.png" alt="Timeline (modo noturno) - Desktop"  width="490"/>
+<img src="./src/assets/timeline-desktop.png" alt="Timeline - Desktop"  width="400"/> 
+<img src="./src/assets/timeline-desktop-dark.png" alt="Timeline (modo noturno) - Desktop"  width="400"/>
 </p>
 
 ## 5. Testes de usabilidade 📝

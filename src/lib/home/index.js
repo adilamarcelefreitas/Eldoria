@@ -11,6 +11,8 @@ import {
 import { db } from '../../firebase/firebaseInit.js';
 import sendIcon from '../../assets/send.png';
 import firstLogoBlue from '../../assets/Logo-blue.png';
+import mobileLogoBlue from '../../assets/Logo-blue-mobile.png';
+
 
 export default async () => {
   const homeContainer = document.createElement('div');
@@ -49,7 +51,7 @@ export default async () => {
       </header>
       <main id="main">
         <picture>
-          <img src="${firstLogoBlue}" id="logo-blue">
+          <img src="${mobileLogoBlue}" id="logo-blue">
         </picture>
         <div class="search-container">
         <section class="section-search">
